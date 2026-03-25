@@ -1,0 +1,97 @@
+/* ═══════════════════════════════════════════════════════════════════
+   BASE — Tokens globales, tipografia, componentes reutilizables
+   ═══════════════════════════════════════════════════════════════════ */
+
+.root {
+    -fx-font-family: "Segoe UI";
+}
+
+.app-root {
+    -fx-background-color: linear-gradient(to bottom right, #f4f7fb, #eef3f8);
+}
+
+/* ── Cards ──────────────────────────────────────────────────────────── */
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-color: #dfe6ee;
+    -fx-border-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.08), 24, 0.15, 0, 8);
+}
+
+/* ── Typography ─────────────────────────────────────────────────────── */
+
+.page-header {
+    -fx-padding: 0 0 10 0;
+}
+
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.page-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7280;
+}
+
+.field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #4b5563;
+}
+
+/* ── Form controls ──────────────────────────────────────────────────── */
+
+.text-field,
+.password-field,
+.combo-box,
+.date-picker,
+.text-area {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #dfe6ee;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 10 12 10 12;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────── */
+
+.button {
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 10 16 10 16;
+    -fx-cursor: hand;
+}
+
+.button-primary {
+    -fx-background-color: #2d6aff;
+    -fx-text-fill: white;
+}
+
+.button-primary:hover {
+    -fx-background-color: #1d4ed8;
+}
+
+.button-secondary {
+    -fx-background-color: white;
+    -fx-border-color: #dfe6ee;
+    -fx-text-fill: #111827;
+}
+
+.button-secondary:hover {
+    -fx-border-color: #b8c4d4;
+}
+
+.button-danger {
+    -fx-background-color: #d84d4d;
+    -fx-text-fill: white;
+}
+
+.button-danger:hover {
+    -fx-background-color: #c03838;
+}

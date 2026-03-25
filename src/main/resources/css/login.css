@@ -1,0 +1,187 @@
+/* ═══════════════════════════════════════════════════════════════════
+   LOGIN — Pantalla de inicio de sesion
+   ═══════════════════════════════════════════════════════════════════ */
+
+.login-shell {
+    -fx-background-color: transparent;
+}
+
+/* ── Panel izquierdo — Branding ─────────────────────────────────────── */
+
+.login-brand-panel {
+    -fx-background-color:
+        linear-gradient(to bottom right, rgba(56,115,217,0.2), rgba(30,64,175,0.05)),
+        linear-gradient(to bottom, #0c1b38, #16366a);
+    -fx-alignment: center;
+}
+
+.logo-badge {
+    -fx-background-color: linear-gradient(to bottom right, #4f8bf9, #2d5fd3);
+    -fx-background-radius: 16;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(47,95,211,0.5), 16, 0.3, 0, 4);
+}
+
+.logo-letter {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
+}
+
+.brand-title {
+    -fx-font-size: 30px;
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
+}
+
+.brand-tagline {
+    -fx-font-size: 14px;
+    -fx-text-fill: #92adce;
+    -fx-text-alignment: center;
+    -fx-padding: 4 0 16 0;
+}
+
+/* ── Feature icons ──────────────────────────────────────────────────── */
+
+.feature-icon {
+    -fx-background-color:
+        rgba(255,255,255,0.06),
+        linear-gradient(to bottom, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+    -fx-background-radius: 18;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.1, 0, 2);
+}
+
+.feature-icon-text {
+    -fx-font-size: 26px;
+}
+
+.feature-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #8ba5c8;
+    -fx-text-alignment: center;
+}
+
+/* ── Lado derecho — Formulario ──────────────────────────────────────── */
+
+.login-right {
+    -fx-background-color: linear-gradient(to bottom, #f6f8fc, #edf1f7);
+}
+
+.login-card {
+    -fx-spacing: 6;
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(220,228,240,0.6);
+    -fx-border-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(15,30,60,0.10), 40, 0.12, 0, 12);
+}
+
+.login-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
+    -fx-alignment: center;
+}
+
+.login-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+    -fx-alignment: center;
+    -fx-padding: 0 0 10 0;
+}
+
+/* ── Icon-integrated form fields ────────────────────────────────────── */
+
+.icon-field-box {
+    -fx-background-color: #eef1f6;
+    -fx-background-radius: 14;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-pref-height: 50;
+    -fx-alignment: center-left;
+}
+
+.icon-field-box:focused-within {
+    -fx-background-color: white;
+    -fx-border-color: #3b82f6;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.15), 8, 0.3, 0, 0);
+}
+
+.field-icon {
+    -fx-font-size: 16px;
+    -fx-text-fill: #94a3b8;
+    -fx-padding: 0 0 0 14;
+}
+
+.login-inner-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 12 16 12 8;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #94a3b8;
+}
+
+.login-inner-field:focused {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* ── Boton de login ─────────────────────────────────────────────────── */
+
+.login-button {
+    -fx-background-color: linear-gradient(to right, #2563eb, #3b82f6);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-padding: 15 0 15 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.35), 12, 0.2, 0, 4);
+}
+
+.login-button:hover {
+    -fx-background-color: linear-gradient(to right, #1d4ed8, #2563eb);
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.45), 16, 0.25, 0, 6);
+}
+
+.login-button:pressed {
+    -fx-background-color: #1e40af;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.2), 6, 0.1, 0, 2);
+}
+
+/* ── Footer con credenciales ────────────────────────────────────────── */
+
+.cred-footer {
+    -fx-alignment: center;
+}
+
+.cred-separator {
+    -fx-background-color: linear-gradient(to right, transparent, #d1d9e6, transparent);
+    -fx-pref-height: 1;
+    -fx-max-height: 1;
+}
+
+.cred-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #64748b;
+    -fx-padding: 2 0 2 0;
+}
+
+.cred-role {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #1e293b;
+}
+
+.cred-detail {
+    -fx-font-size: 12px;
+    -fx-text-fill: #94a3b8;
+    -fx-font-family: "Consolas";
+}

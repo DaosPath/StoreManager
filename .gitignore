@@ -1,0 +1,6 @@
+.vscode/
+target/
+*.log
+*.out
+*.err
+src/**/*.class
