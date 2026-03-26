@@ -1,22 +1,18 @@
 package com.manager.storemanager.fx;
 
+import com.manager.storemanager.fx.login.NativeLoginView;
 import com.manager.storemanager.model.User;
 import com.manager.storemanager.service.AuthService;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class StoreManagerApp extends Application {
 
-    private static final String LOGIN_PROMPT = "__storemanager_login__";
-
     private final AuthService authService = new AuthService();
     private Stage primaryStage;
-    private WebViewBridge loginView;
+    private NativeLoginView loginView;
     private boolean authenticating;
 
     @Override
@@ -27,42 +23,19 @@ public class StoreManagerApp extends Application {
         primaryStage.setMinWidth(1080);
         primaryStage.setMinHeight(680);
         primaryStage.show();
+        loginView.initialize();
     }
 
     private Scene createLoginScene() {
-        loginView = new WebViewBridge("/web/login.html");
-        loginView.getEngine().setPromptHandler(prompt -> {
-            if (LOGIN_PROMPT.equals(prompt.getMessage())) {
-                handleLoginPrompt(prompt.getDefaultValue());
-            }
-            return "";
-        });
-        loginView.whenReady(() -> loginView.execute("window.initializeLogin();"));
+        loginView = new NativeLoginView();
+        loginView.setOnLoginRequested(this::authenticate);
 
-        BorderPane root = new BorderPane();
-        root.getStyleClass().add("login-scene");
-        root.setCenter(loginView.getView());
-
-        Scene scene = new Scene(root, 1180, 720);
-        FxSupport.applyLoginTheme(scene);
+        Scene scene = new Scene(loginView, 1180, 720);
+        scene.getStylesheets().setAll(
+                css("/css/base.css"),
+                css("/css/login-native.css")
+        );
         return scene;
-    }
-
-    private void handleLoginPrompt(String payload) {
-        if (payload == null || payload.isBlank()) {
-            notifyLoginResult(false, "No se pudo iniciar sesión.");
-            return;
-        }
-
-        String[] parts = payload.split("\\|", 2);
-        if (parts.length != 2) {
-            notifyLoginResult(false, "No se pudo iniciar sesión.");
-            return;
-        }
-
-        String username = URLDecoder.decode(parts[0], StandardCharsets.UTF_8);
-        String password = URLDecoder.decode(parts[1], StandardCharsets.UTF_8);
-        authenticate(username, password);
     }
 
     private void authenticate(String username, String password) {
@@ -74,11 +47,14 @@ public class StoreManagerApp extends Application {
         String normalizedPassword = password == null ? "" : password;
 
         if (normalizedUsername.isBlank() || normalizedPassword.isBlank()) {
-            notifyLoginResult(false, "Completa usuario y contraseña.");
+            notifyLoginResult(false, "Completa usuario y contrasena.");
             return;
         }
 
         authenticating = true;
+        loginView.setBusy(true);
+        loginView.clearFeedback();
+
         Task<User> task = new Task<>() {
             @Override
             protected User call() throws Exception {
@@ -89,6 +65,7 @@ public class StoreManagerApp extends Application {
         task.setOnSucceeded(event -> {
             authenticating = false;
             try {
+                loginView.persistRememberedCredentials();
                 openMainScene(task.getValue());
             } catch (RuntimeException exception) {
                 exception.printStackTrace();
@@ -113,20 +90,15 @@ public class StoreManagerApp extends Application {
         if (loginView == null) {
             return;
         }
-        loginView.execute("window.finishLogin(" + success + ", " + WebViewBridge.jsString(message) + ");");
+        loginView.setBusy(false);
+        loginView.showFeedback(success, message);
     }
 
     private String normalizeLoginError(Throwable exception) {
         if (exception == null || exception.getMessage() == null || exception.getMessage().isBlank()) {
-            return "No se pudo iniciar sesión.";
+            return "No se pudo iniciar sesion.";
         }
-        return exception.getMessage()
-                .replace("contraseÃƒÂ±a", "contraseña")
-                .replace("contraseÃ±a", "contraseña")
-                .replace("invÃƒÂ¡lidos", "inválidos")
-                .replace("invÃ¡lidos", "inválidos")
-                .replace("sesiÃƒÂ³n", "sesión")
-                .replace("sesiÃ³n", "sesión");
+        return exception.getMessage();
     }
 
     private void openMainScene(User user) {
@@ -135,5 +107,9 @@ public class StoreManagerApp extends Application {
         FxSupport.applyTheme(mainScene);
         primaryStage.setScene(mainScene);
         primaryStage.centerOnScreen();
+    }
+
+    private static String css(String path) {
+        return StoreManagerApp.class.getResource(path).toExternalForm();
     }
 }

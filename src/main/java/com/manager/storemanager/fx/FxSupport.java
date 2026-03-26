@@ -30,15 +30,10 @@ public final class FxSupport {
     }
 
     private static final String BASE_CSS = css("/css/base.css");
-    private static final String LOGIN_CSS = css("/css/login.css");
     private static final String MAIN_CSS = css("/css/main.css");
 
     public static void applyTheme(Scene scene) {
         scene.getStylesheets().setAll(BASE_CSS, MAIN_CSS);
-    }
-
-    public static void applyLoginTheme(Scene scene) {
-        scene.getStylesheets().setAll(BASE_CSS, LOGIN_CSS);
     }
 
     public static void enhanceScrollPane(ScrollPane scrollPane, double multiplier) {

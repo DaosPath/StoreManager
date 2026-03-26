@@ -1,15 +1,14 @@
 package com.manager.storemanager.fx;
 
-import com.manager.storemanager.config.AppConfig;
+import com.manager.storemanager.fx.ticket.NativeTicketView;
 import com.manager.storemanager.model.Sale;
-import com.manager.storemanager.model.SaleDetail;
 import com.manager.storemanager.model.User;
-import com.manager.storemanager.util.CurrencyUtils;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.print.PrinterJob;
+import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -31,20 +30,22 @@ public final class SaleTicketWindow {
         }
 
         stage.setTitle("Ticket de venta");
-        stage.setMinWidth(460);
-        stage.setMinHeight(640);
+        stage.setMinWidth(520);
+        stage.setMinHeight(720);
 
-        WebViewBridge bridge = new WebViewBridge("/web/ticket.html");
+        NativeTicketView ticketView = new NativeTicketView();
+        ticketView.setTicket(currentUser, sale);
+
         BorderPane root = new BorderPane();
         root.getStyleClass().add("app-root");
-        root.setCenter(bridge.getView());
+        root.setCenter(ticketView);
 
         Button printButton = new Button("Imprimir");
-        printButton.getStyleClass().addAll("button", "button-secondary");
-        printButton.setOnAction(event -> print(stage, bridge));
+        printButton.getStyleClass().add("ticket-button-secondary");
+        printButton.setOnAction(event -> print(stage, ticketView));
 
         Button closeButton = new Button("Cerrar");
-        closeButton.getStyleClass().addAll("button", "button-primary");
+        closeButton.getStyleClass().add("ticket-button-primary");
         closeButton.setOnAction(event -> stage.close());
 
         HBox actions = new HBox(10, printButton, closeButton);
@@ -52,15 +53,13 @@ public final class SaleTicketWindow {
         actions.setPadding(new Insets(14, 18, 18, 18));
         root.setBottom(actions);
 
-        Scene scene = new Scene(root, 460, 680);
-        FxSupport.applyTheme(scene);
+        Scene scene = new Scene(root, 520, 760);
+        scene.getStylesheets().setAll(css("/css/base.css"), css("/css/ticket-native.css"));
         stage.setScene(scene);
-
-        bridge.execute("window.renderTicket(" + buildPayload(currentUser, sale) + ");");
         stage.showAndWait();
     }
 
-    private static void print(Stage stage, WebViewBridge bridge) {
+    private static void print(Stage stage, NativeTicketView ticketView) {
         PrinterJob printerJob = PrinterJob.createPrinterJob();
         if (printerJob == null) {
             FxSupport.showError("Ticket", "No hay impresora disponible.");
@@ -69,46 +68,28 @@ public final class SaleTicketWindow {
         if (!printerJob.showPrintDialog(stage)) {
             return;
         }
+
+        Node printable = ticketView.getPrintableNode();
+        printable.applyCss();
+        if (printable instanceof Parent parent) {
+            parent.layout();
+        }
+
         try {
-            bridge.getEngine().print(printerJob);
-            printerJob.endJob();
+            boolean printed = printerJob.printPage(printable);
+            if (printed) {
+                printerJob.endJob();
+            } else {
+                printerJob.cancelJob();
+                FxSupport.showError("Ticket", "No se pudo imprimir el ticket.");
+            }
         } catch (RuntimeException exception) {
+            printerJob.cancelJob();
             FxSupport.showError("Ticket", "No se pudo imprimir el ticket.");
         }
     }
 
-    private static String buildPayload(User currentUser, Sale sale) {
-        List<String[]> detailRows = new ArrayList<>();
-        for (SaleDetail detail : sale.getDetails()) {
-            detailRows.add(new String[]{
-                detail.getProduct().getName(),
-                String.valueOf(detail.getQuantity()),
-                CurrencyUtils.format(detail.getUnitPrice()),
-                CurrencyUtils.format(detail.getLineTotal())
-            });
-        }
-
-        String dateText = sale.getSaleDate() == null
-                ? ""
-                : sale.getSaleDate().format(AppConfig.DATE_TIME_FORMATTER);
-        String customerName = sale.getCustomer() == null ? "Mostrador" : sale.getCustomer().getName();
-        String cashierName = currentUser == null ? "" : currentUser.getFullName();
-        String observation = sale.getObservation() == null || sale.getObservation().isBlank()
-                ? "Sin observaciones."
-                : sale.getObservation();
-
-        return "{"
-                + "\"saleNumber\":" + WebViewBridge.jsString("#" + sale.getId()) + ","
-                + "\"date\":" + WebViewBridge.jsString(dateText) + ","
-                + "\"cashier\":" + WebViewBridge.jsString(cashierName) + ","
-                + "\"customer\":" + WebViewBridge.jsString(customerName) + ","
-                + "\"paymentMethod\":" + WebViewBridge.jsString(sale.getPaymentMethod()) + ","
-                + "\"status\":" + WebViewBridge.jsString(sale.getStatus()) + ","
-                + "\"observation\":" + WebViewBridge.jsString(observation) + ","
-                + "\"subtotal\":" + WebViewBridge.jsString(CurrencyUtils.format(sale.getSubtotal())) + ","
-                + "\"tax\":" + WebViewBridge.jsString(CurrencyUtils.format(sale.getTax())) + ","
-                + "\"total\":" + WebViewBridge.jsString(CurrencyUtils.format(sale.getTotal())) + ","
-                + "\"items\":" + WebViewBridge.jsMatrix(detailRows)
-                + "}";
+    private static String css(String path) {
+        return Objects.requireNonNull(SaleTicketWindow.class.getResource(path)).toExternalForm();
     }
 }
