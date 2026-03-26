@@ -88,12 +88,7 @@ public final class FxSupport {
 
     private static void styleAlert(Alert alert) {
         DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().addAll(
-                FxSupport.class.getResource("/css/base.css").toExternalForm(),
-                FxSupport.class.getResource("/css/main.css").toExternalForm()
-        );
-        dialogPane.getStyleClass().add("app-root");
-        dialogPane.setPadding(new Insets(16));
+        applyDialogTheme(dialogPane);
         if (dialogPane.lookupButton(ButtonType.YES) != null) {
             dialogPane.lookupButton(ButtonType.YES).getStyleClass().add("button-primary");
         }
@@ -103,5 +98,13 @@ public final class FxSupport {
         if (dialogPane.lookupButton(ButtonType.OK) != null) {
             dialogPane.lookupButton(ButtonType.OK).getStyleClass().add("button-primary");
         }
+    }
+
+    public static void applyDialogTheme(DialogPane dialogPane) {
+        dialogPane.getStylesheets().setAll(BASE_CSS, MAIN_CSS);
+        if (!dialogPane.getStyleClass().contains("app-root")) {
+            dialogPane.getStyleClass().add("app-root");
+        }
+        dialogPane.setPadding(new Insets(16));
     }
 }

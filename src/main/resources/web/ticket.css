@@ -1,0 +1,150 @@
+:root {
+  --bg: #efe9de;
+  --card: #fffdf9;
+  --border: #ddd2c2;
+  --text: #2a241d;
+  --muted: #786f64;
+  --accent: #8b5a2b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  padding: 18px;
+}
+
+.ticket-shell {
+  display: flex;
+  justify-content: center;
+}
+
+.ticket-card {
+  width: min(100%, 380px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.ticket-header,
+.ticket-section {
+  padding: 18px 20px;
+}
+
+.ticket-header {
+  border-bottom: 1px solid var(--border);
+}
+
+.store-name {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ticket-header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.ticket-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.ticket-meta span,
+.info-grid span,
+.totals span,
+.section-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ticket-meta strong,
+.info-grid strong,
+.totals strong {
+  font-size: 13px;
+}
+
+.ticket-section {
+  border-bottom: 1px solid var(--border);
+}
+
+.ticket-section:last-child {
+  border-bottom: 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ticket-table th,
+.ticket-table td {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+  text-align: left;
+  font-size: 13px;
+}
+
+.ticket-table th {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.ticket-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.totals {
+  display: grid;
+  gap: 10px;
+}
+
+.totals div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.total-line {
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.total-line strong {
+  font-size: 18px;
+}
+
+.observation {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+}

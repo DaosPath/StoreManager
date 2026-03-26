@@ -2,10 +2,10 @@ package com.manager.storemanager.ui;
 
 import com.manager.storemanager.model.User;
 import com.manager.storemanager.service.CustomerService;
-import com.manager.storemanager.service.InventoryService;
 import com.manager.storemanager.service.ProductService;
 import com.manager.storemanager.service.ReportService;
 import com.manager.storemanager.service.SaleService;
+import com.manager.storemanager.service.StockService;
 import com.manager.storemanager.service.SupplierService;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -47,14 +47,14 @@ public class MainFrame extends JFrame {
         ProductService productService = new ProductService();
         CustomerService customerService = new CustomerService();
         SupplierService supplierService = new SupplierService();
-        InventoryService inventoryService = new InventoryService();
+        StockService stockService = new StockService();
         SaleService saleService = new SaleService();
         ReportService reportService = new ReportService();
 
         registerView("Dashboard", new DashboardPanel(reportService));
         registerView("Productos", new ProductPanel(productService));
         registerView("Ventas", new SalesPanel(currentUser, productService, customerService, saleService));
-        registerView("Inventario", new InventoryPanel(currentUser, inventoryService));
+        registerView("Gestion de stock", new StockManagementPanel(currentUser, stockService));
         registerView("Clientes", new CustomerPanel(customerService));
         registerView("Proveedores", new SupplierPanel(supplierService));
         registerView("Reportes", new ReportsPanel(productService, saleService, reportService));

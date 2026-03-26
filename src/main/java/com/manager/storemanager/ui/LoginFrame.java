@@ -148,7 +148,7 @@ public class LoginFrame extends JFrame {
         featuresRow.setMaximumSize(new Dimension(400, 90));
 
         featuresRow.add(createFeatureItem("Ventas", FeatureIcon.CART));
-        featuresRow.add(createFeatureItem("Inventario", FeatureIcon.CLIPBOARD));
+        featuresRow.add(createFeatureItem("Gestion de stock", FeatureIcon.CLIPBOARD));
         featuresRow.add(createFeatureItem("Reportes", FeatureIcon.CHART));
 
         content.add(logoRow);

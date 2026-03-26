@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reportes</title>
+  <link rel="stylesheet" href="reports.css" />
+</head>
+<body>
+  <main class="layout">
+    <section class="report-header">
+      <div>
+        <p class="eyebrow">Centro analitico</p>
+        <h1 id="reportTitle">Reportes</h1>
+        <p id="reportSubtitle" class="subtitle">Selecciona una vista para cargar informacion.</p>
+      </div>
+      <aside class="counter-box">
+        <span class="counter-label">Resumen</span>
+        <strong id="reportBadge">0 registros</strong>
+      </aside>
+    </section>
+
+    <section class="panel note-panel">
+      <p id="reportNote" class="note-text">Los datos se actualizaran desde la aplicacion JavaFX.</p>
+    </section>
+
+    <section class="panel table-panel">
+      <div id="emptyState" class="empty-state">No hay datos para mostrar en este reporte.</div>
+      <table id="reportTable" class="report-table" hidden>
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="reports.js"></script>
+</body>
+</html>

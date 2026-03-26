@@ -117,13 +117,18 @@ public class ProductDao {
     }
 
     public void deactivate(Long id) {
-        String sql = "UPDATE productos SET estado = 'INACTIVO' WHERE id = ?";
+        updateStatus(id, "INACTIVO");
+    }
+
+    public void updateStatus(Long id, String status) {
+        String sql = "UPDATE productos SET estado = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, id);
+            statement.setString(1, status);
+            statement.setLong(2, id);
             statement.executeUpdate();
         } catch (SQLException exception) {
-            throw new IllegalStateException("No fue posible desactivar el producto.", exception);
+            throw new IllegalStateException("No fue posible actualizar el estado del producto.", exception);
         }
     }
 

@@ -82,6 +82,15 @@ public class SupplierDao {
         }
     }
 
+    public void deactivate(Long supplierId) throws SQLException {
+        String sql = "UPDATE proveedores SET activo = 0 WHERE id = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, supplierId);
+            statement.executeUpdate();
+        }
+    }
+
     private Supplier mapSupplier(ResultSet resultSet) throws SQLException {
         Supplier supplier = new Supplier();
         supplier.setId(resultSet.getLong("id"));

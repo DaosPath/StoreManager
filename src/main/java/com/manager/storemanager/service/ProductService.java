@@ -51,6 +51,11 @@ public class ProductService {
         productDao.deactivate(productId);
     }
 
+    public void updateStatus(Long productId, String status) throws SQLException {
+        ValidationUtils.requireNotBlank(status, "estado");
+        productDao.updateStatus(productId, status);
+    }
+
     private void validate(Product product) {
         ValidationUtils.requireNotBlank(product.getCode(), "código");
         ValidationUtils.requireNotBlank(product.getName(), "nombre");

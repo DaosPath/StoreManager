@@ -24,6 +24,10 @@ public class SupplierService {
         supplierDao.update(supplier);
     }
 
+    public void deactivate(Long supplierId) throws SQLException {
+        supplierDao.deactivate(supplierId);
+    }
+
     private void validate(Supplier supplier) {
         ValidationUtils.requireNotBlank(supplier.getName(), "nombre");
     }

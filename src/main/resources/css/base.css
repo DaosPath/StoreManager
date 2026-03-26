@@ -1,67 +1,71 @@
-/* ═══════════════════════════════════════════════════════════════════
-   BASE — Tokens globales, tipografia, componentes reutilizables
-   ═══════════════════════════════════════════════════════════════════ */
-
 .root {
-    -fx-font-family: "Segoe UI";
+    -fx-font-family: "Bahnschrift";
 }
 
 .app-root {
-    -fx-background-color: linear-gradient(to bottom right, #f4f7fb, #eef3f8);
+    -fx-background-color: #efe9de;
 }
-
-/* ── Cards ──────────────────────────────────────────────────────────── */
 
 .card {
-    -fx-background-color: white;
-    -fx-background-radius: 20;
-    -fx-border-color: #dfe6ee;
-    -fx-border-radius: 20;
-    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.08), 24, 0.15, 0, 8);
+    -fx-background-color: #fcfaf6;
+    -fx-background-radius: 12;
+    -fx-border-color: #d7cdbf;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(33, 27, 21, 0.08), 18, 0.12, 0, 4);
 }
 
-/* ── Typography ─────────────────────────────────────────────────────── */
-
 .page-header {
-    -fx-padding: 0 0 10 0;
+    -fx-padding: 0 0 12 0;
 }
 
 .page-title {
-    -fx-font-size: 24px;
+    -fx-font-size: 25px;
     -fx-font-weight: 700;
-    -fx-text-fill: #111827;
+    -fx-text-fill: #211b15;
 }
 
 .page-subtitle {
     -fx-font-size: 13px;
-    -fx-text-fill: #6b7280;
+    -fx-text-fill: #6c6258;
 }
 
 .field-label {
     -fx-font-size: 12px;
     -fx-font-weight: 700;
-    -fx-text-fill: #4b5563;
+    -fx-text-fill: #4f4438;
 }
-
-/* ── Form controls ──────────────────────────────────────────────────── */
 
 .text-field,
 .password-field,
 .combo-box,
 .date-picker,
 .text-area {
-    -fx-background-color: #f8fafc;
-    -fx-border-color: #dfe6ee;
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
+    -fx-background-color: #fffdfa;
+    -fx-border-color: #d7cdbf;
+    -fx-background-radius: 9;
+    -fx-border-radius: 9;
+    -fx-text-fill: #211b15;
+    -fx-prompt-text-fill: #9a8f81;
     -fx-padding: 10 12 10 12;
 }
 
-/* ── Buttons ────────────────────────────────────────────────────────── */
+.text-field:focused,
+.password-field:focused,
+.combo-box:focused,
+.date-picker:focused,
+.text-area:focused {
+    -fx-border-color: #a97e4d;
+    -fx-effect: dropshadow(gaussian, rgba(169, 126, 77, 0.15), 8, 0.2, 0, 0);
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #211b15;
+    -fx-background-color: transparent;
+}
 
 .button {
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
+    -fx-background-radius: 9;
+    -fx-border-radius: 9;
     -fx-font-size: 13px;
     -fx-font-weight: 700;
     -fx-padding: 10 16 10 16;
@@ -69,29 +73,34 @@
 }
 
 .button-primary {
-    -fx-background-color: #2d6aff;
-    -fx-text-fill: white;
+    -fx-background-color: #7f5a33;
+    -fx-text-fill: #fffaf5;
 }
 
 .button-primary:hover {
-    -fx-background-color: #1d4ed8;
+    -fx-background-color: #6f4f2d;
 }
 
 .button-secondary {
-    -fx-background-color: white;
-    -fx-border-color: #dfe6ee;
-    -fx-text-fill: #111827;
+    -fx-background-color: #fffdfa;
+    -fx-border-color: #d7cdbf;
+    -fx-text-fill: #211b15;
 }
 
 .button-secondary:hover {
-    -fx-border-color: #b8c4d4;
+    -fx-background-color: #f6f1e8;
+    -fx-border-color: #c2b4a2;
 }
 
 .button-danger {
-    -fx-background-color: #d84d4d;
-    -fx-text-fill: white;
+    -fx-background-color: #a94e43;
+    -fx-text-fill: #fffaf5;
 }
 
 .button-danger:hover {
-    -fx-background-color: #c03838;
+    -fx-background-color: #934338;
+}
+
+.dialog-pane {
+    -fx-background-color: #efe9de;
 }

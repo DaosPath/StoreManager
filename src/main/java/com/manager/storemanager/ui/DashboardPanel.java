@@ -197,7 +197,7 @@ public class DashboardPanel extends JPanel implements RefreshableView {
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Segoe UI", Font.BOLD, 15));
 
-        JLabel body = new JLabel("<html><div style='width:200px; line-height:130%'>Usa Reportes para revisar ventas por rango y el modulo Inventario para registrar nuevas entradas de mercaderia.</div></html>");
+        JLabel body = new JLabel("<html><div style='width:200px; line-height:130%'>Usa Reportes para revisar ventas por rango y el modulo Gestion de stock para registrar nuevas entradas de mercaderia.</div></html>");
         body.setForeground(new Color(185, 200, 222));
         body.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 

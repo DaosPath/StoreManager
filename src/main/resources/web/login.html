@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StoreManager Login</title>
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+  <main class="shell">
+    <aside class="rail">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div class="brand-copy">
+          <strong>StoreManager</strong>
+          <span>Acceso para caja y administración</span>
+        </div>
+      </div>
+
+      <section class="rail-panel">
+        <ul class="module-list">
+          <li>
+            <strong>Ventas</strong>
+            <span>Carrito, cobro y ticket de salida.</span>
+          </li>
+          <li>
+            <strong>Inventario</strong>
+            <span>Entradas de mercadería y alertas de stock.</span>
+          </li>
+          <li>
+            <strong>Reportes</strong>
+            <span>Consulta diaria y seguimiento comercial.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="rail-panel credentials-panel">
+        <div class="credential-row">
+          <div>
+            <strong>Admin</strong>
+            <span>admin / admin123</span>
+          </div>
+          <button type="button" class="link-button" data-user="admin" data-password="admin123">Usar</button>
+        </div>
+        <div class="credential-row">
+          <div>
+            <strong>Cajero</strong>
+            <span>cajero / cajero123</span>
+          </div>
+          <button type="button" class="link-button" data-user="cajero" data-password="cajero123">Usar</button>
+        </div>
+      </section>
+    </aside>
+
+    <section class="content">
+      <div class="form-panel">
+        <header class="form-header">
+          <h1>Iniciar sesión</h1>
+          <p>Ingresa tus credenciales para continuar.</p>
+        </header>
+
+        <form id="loginForm" class="login-form" novalidate>
+          <div class="field">
+            <label for="username">Usuario</label>
+            <input id="username" name="username" type="text" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="password">Contraseña</label>
+            <input id="password" name="password" type="password" autocomplete="off" />
+          </div>
+
+          <div id="feedback" class="feedback" hidden></div>
+
+          <button id="submitButton" type="submit" class="submit-button">Entrar al sistema</button>
+        </form>
+
+        <div class="access-note">
+          <div>
+            <strong>Acceso por rol</strong>
+            <span>Admin gestiona catálogo y reportes. Cajero opera ventas e inventario.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="login.js"></script>
+</body>
+</html>
