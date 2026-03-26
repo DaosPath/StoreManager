@@ -113,6 +113,32 @@ CREATE TABLE detalle_ventas (
         ON DELETE RESTRICT
 );
 
+CREATE TABLE documentos_stock (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    tipo_registro VARCHAR(20) NOT NULL,
+    proveedor_id BIGINT NULL,
+    usuario_id BIGINT NOT NULL,
+    tipo_documento VARCHAR(20) NULL,
+    serie VARCHAR(30) NULL,
+    correlativo VARCHAR(30) NULL,
+    almacen_destino VARCHAR(80) NOT NULL,
+    tipo_ajuste VARCHAR(30) NULL,
+    motivo_general VARCHAR(180) NULL,
+    observacion VARCHAR(250) NULL,
+    total_lineas INT NOT NULL DEFAULT 0,
+    total_unidades INT NOT NULL DEFAULT 0,
+    monto_total DECIMAL(12, 2) NOT NULL DEFAULT 0,
+    creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_documentos_stock_proveedor FOREIGN KEY (proveedor_id)
+        REFERENCES proveedores (id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL,
+    CONSTRAINT fk_documentos_stock_usuario FOREIGN KEY (usuario_id)
+        REFERENCES usuarios (id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
 CREATE TABLE movimientos_inventario (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     producto_id BIGINT NOT NULL,
@@ -121,7 +147,12 @@ CREATE TABLE movimientos_inventario (
     cantidad INT NOT NULL,
     stock_anterior INT NOT NULL,
     stock_nuevo INT NOT NULL,
-    motivo VARCHAR(150),
+    costo_unitario DECIMAL(12, 2) NULL,
+    subtotal_movimiento DECIMAL(12, 2) NULL,
+    lote VARCHAR(60) NULL,
+    fecha_vencimiento DATE NULL,
+    motivo VARCHAR(255),
+    referencia_tipo VARCHAR(30) NULL,
     referencia_id BIGINT NULL,
     fecha_movimiento DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_movimientos_productos FOREIGN KEY (producto_id)
@@ -139,7 +170,9 @@ CREATE INDEX idx_productos_codigo ON productos (codigo);
 CREATE INDEX idx_productos_nombre ON productos (nombre);
 CREATE INDEX idx_clientes_nombre_documento ON clientes (nombre, documento);
 CREATE INDEX idx_ventas_fecha ON ventas (fecha_venta);
+CREATE INDEX idx_documentos_stock_fecha ON documentos_stock (creado_en);
 CREATE INDEX idx_movimientos_fecha_producto ON movimientos_inventario (fecha_movimiento, producto_id);
+CREATE INDEX idx_movimientos_referencia ON movimientos_inventario (referencia_tipo, referencia_id);
 
 INSERT INTO roles (nombre, descripcion) VALUES
 ('admin', 'Administrador del sistema'),
@@ -167,7 +200,18 @@ INSERT INTO productos (categoria_id, proveedor_id, codigo, nombre, descripcion, 
 (2, 2, 'PRD-002', 'Gaseosa Cola 500ml', 'Bebida gaseosa', 1800.00, 2500.00, 24, 8, 'ACTIVO'),
 (3, 1, 'PRD-003', 'Detergente 500g', 'Detergente en polvo', 3200.00, 4500.00, 12, 5, 'ACTIVO');
 
-INSERT INTO movimientos_inventario (producto_id, usuario_id, tipo_movimiento, cantidad, stock_anterior, stock_nuevo, motivo, referencia_id) VALUES
-(1, 1, 'ENTRADA', 35, 0, 35, 'Carga inicial', NULL),
-(2, 1, 'ENTRADA', 24, 0, 24, 'Carga inicial', NULL),
-(3, 1, 'ENTRADA', 12, 0, 12, 'Carga inicial', NULL);
+INSERT INTO documentos_stock (
+    tipo_registro, proveedor_id, usuario_id, tipo_documento, serie, correlativo,
+    almacen_destino, tipo_ajuste, motivo_general, observacion, total_lineas, total_unidades, monto_total
+) VALUES (
+    'AJUSTE', NULL, 1, NULL, NULL, NULL,
+    'Almacen principal', 'Regularizacion', 'Carga inicial', 'Carga inicial del inventario base', 3, 71, 179600.00
+);
+
+INSERT INTO movimientos_inventario (
+    producto_id, usuario_id, tipo_movimiento, cantidad, stock_anterior, stock_nuevo,
+    costo_unitario, subtotal_movimiento, lote, fecha_vencimiento, motivo, referencia_tipo, referencia_id
+) VALUES
+(1, 1, 'ENTRADA', 35, 0, 35, 2800.00, 98000.00, NULL, NULL, 'Ajuste Regularizacion - Carga inicial', 'DOCUMENTO_STOCK', 1),
+(2, 1, 'ENTRADA', 24, 0, 24, 1800.00, 43200.00, NULL, NULL, 'Ajuste Regularizacion - Carga inicial', 'DOCUMENTO_STOCK', 1),
+(3, 1, 'ENTRADA', 12, 0, 12, 3200.00, 38400.00, NULL, NULL, 'Ajuste Regularizacion - Carga inicial', 'DOCUMENTO_STOCK', 1);

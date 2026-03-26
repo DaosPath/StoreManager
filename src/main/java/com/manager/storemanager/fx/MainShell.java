@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import javafx.application.Platform;
+import javafx.scene.Group;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -30,6 +31,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 
 public class MainShell extends BorderPane {
@@ -72,8 +75,8 @@ public class MainShell extends BorderPane {
     private Node buildSidebar(User currentUser) {
         VBox sidebar = new VBox(18);
         sidebar.getStyleClass().add("sidebar");
-        sidebar.setPrefWidth(232);
-        sidebar.setPadding(new Insets(16, 14, 14, 14));
+        sidebar.setPrefWidth(228);
+        sidebar.setPadding(new Insets(16, 12, 14, 12));
 
         Label title = new Label("StoreManager");
         title.getStyleClass().add("sidebar-title");
@@ -105,7 +108,7 @@ public class MainShell extends BorderPane {
         Button button = new Button();
         button.getStyleClass().addAll("button", "nav-button");
         button.setMaxWidth(Double.MAX_VALUE);
-        button.setMinHeight(52);
+        button.setMinHeight(50);
         button.setAlignment(Pos.CENTER_LEFT);
         button.setGraphic(createNavGraphic(name));
         button.setOnAction(event -> showView(name));
@@ -113,6 +116,12 @@ public class MainShell extends BorderPane {
     }
 
     private Node createNavGraphic(String name) {
+        Region accent = new Region();
+        accent.getStyleClass().add("nav-accent");
+        accent.setMinWidth(4);
+        accent.setPrefWidth(4);
+        accent.setMaxWidth(4);
+
         StackPane iconBox = new StackPane();
         iconBox.getStyleClass().add("nav-icon-box");
         iconBox.setMinSize(20, 20);
@@ -122,16 +131,28 @@ public class MainShell extends BorderPane {
         Label text = new Label(name);
         text.getStyleClass().add("nav-text");
 
-        HBox row = new HBox(12, iconBox, text);
+        HBox row = new HBox(10, accent, iconBox, text);
         row.setAlignment(Pos.CENTER_LEFT);
         return row;
     }
 
     private Node createNavIcon(String name) {
-        SVGPath icon = new SVGPath();
+        Node icon = buildNavIcon(name);
         icon.getStyleClass().add("nav-icon");
-        icon.setContent(iconPath(name));
         return icon;
+    }
+
+    private Node buildNavIcon(String name) {
+        return switch (name) {
+            case "Dashboard" -> dashboardIcon();
+            case "Productos" -> productsIcon();
+            case "Ventas" -> salesIcon();
+            case "Gestion de stock" -> stockIcon();
+            case "Clientes" -> customersIcon();
+            case "Proveedores" -> suppliersIcon();
+            case "Reportes" -> reportsIcon();
+            default -> defaultIcon();
+        };
     }
 
     private HBox createUserFooter(User currentUser) {
@@ -194,16 +215,103 @@ public class MainShell extends BorderPane {
         }
     }
 
-    private String iconPath(String name) {
-        return switch (name) {
-            case "Dashboard" -> "M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z";
-            case "Productos" -> "M12 2 4 6v12l8 4 8-4V6L12 2z M12 4.2 17.8 7 12 9.8 6.2 7 12 4.2z M6 9.2l5 2.6v7.5L6 16.8V9.2z M18 9.2v7.6l-5 2.5v-7.5L18 9.2z";
-            case "Ventas" -> "M3 5h2l2.4 8.2c.2.7.8 1.3 1.7 1.3h7.9c.8 0 1.5-.5 1.7-1.3L21 8H8.1 M10 18a1.7 1.7 0 1 0 0 3.4A1.7 1.7 0 0 0 10 18zm8 0a1.7 1.7 0 1 0 0 3.4A1.7 1.7 0 0 0 18 18z";
-            case "Gestion de stock" -> "M5 7h14l1 3v9H4v-9l1-3zm2 3v7h10v-7H7zm3-6h4l1 2H9l1-2z";
-            case "Clientes" -> "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zm7.5 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z M3.5 20a5.5 5.5 0 0 1 11 0v1h-11v-1zm11.7 1a4.3 4.3 0 0 1 4.3-4.1A4.3 4.3 0 0 1 23 21z";
-            case "Proveedores" -> "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zm8 0a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M2.5 21a6 6 0 0 1 13 0v1h-13v-1zm9.5 1a6 6 0 0 1 11 0";
-            case "Reportes" -> "M5 4h10l4 4v12H5V4zm9 1.5V9h3.5L14 5.5z M8 13h8v1.8H8zm0 3.6h8v1.8H8zm0-7.2h5v1.8H8z";
-            default -> "M4 4h16v16H4z";
-        };
+    private Node dashboardIcon() {
+        Group group = new Group(
+                roundedRect(3, 3, 7, 7),
+                roundedRect(14, 3, 7, 7),
+                roundedRect(14, 14, 7, 7),
+                roundedRect(3, 14, 7, 7)
+        );
+        return navIconGroup(group);
+    }
+
+    private Node productsIcon() {
+        Group group = new Group(
+                path("m7.5 4.27 9 5.15"),
+                path("M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"),
+                path("m3.3 7 8.7 5 8.7-5"),
+                path("M12 22V12")
+        );
+        return navIconGroup(group);
+    }
+
+    private Node salesIcon() {
+        Group group = new Group(
+                strokedCircle(8, 21, 1),
+                strokedCircle(19, 21, 1),
+                path("M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12")
+        );
+        return navIconGroup(group);
+    }
+
+    private Node stockIcon() {
+        Group group = new Group(
+                roundedRect(2, 3, 20, 5),
+                path("M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"),
+                path("M10 12h4")
+        );
+        return navIconGroup(group);
+    }
+
+    private Node customersIcon() {
+        Group group = new Group(
+                path("M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"),
+                strokedCircle(9, 7, 4),
+                path("M22 21v-2a4 4 0 0 0-3-3.87"),
+                path("M16 3.13a4 4 0 0 1 0 7.75")
+        );
+        return navIconGroup(group);
+    }
+
+    private Node suppliersIcon() {
+        Group group = new Group(
+                path("M10 17h4V5H2v12h3"),
+                path("M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h2"),
+                strokedCircle(7.5, 17.5, 2.5),
+                strokedCircle(17.5, 17.5, 2.5)
+        );
+        return navIconGroup(group);
+    }
+
+    private Node reportsIcon() {
+        Group group = new Group(
+                path("M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"),
+                path("M14 2v4a2 2 0 0 0 2 2h4"),
+                path("M10 9H8"),
+                path("M16 13H8"),
+                path("M16 17H8")
+        );
+        return navIconGroup(group);
+    }
+
+    private Node defaultIcon() {
+        return navIconGroup(new Group(roundedRect(4, 4, 16, 16)));
+    }
+
+    private Group navIconGroup(Group group) {
+        group.setScaleX(0.76);
+        group.setScaleY(0.76);
+        return group;
+    }
+
+    private Rectangle roundedRect(double x, double y, double width, double height) {
+        Rectangle rect = new Rectangle(x, y, width, height);
+        rect.setArcWidth(2);
+        rect.setArcHeight(2);
+        rect.getStyleClass().add("nav-icon-stroke");
+        return rect;
+    }
+
+    private Circle strokedCircle(double centerX, double centerY, double radius) {
+        Circle circle = new Circle(centerX, centerY, radius);
+        circle.getStyleClass().add("nav-icon-stroke");
+        return circle;
+    }
+
+    private SVGPath path(String content) {
+        SVGPath path = new SVGPath();
+        path.setContent(content);
+        path.getStyleClass().add("nav-icon-stroke");
+        return path;
     }
 }

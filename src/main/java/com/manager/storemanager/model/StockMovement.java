@@ -1,5 +1,7 @@
 package com.manager.storemanager.model;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class StockMovement {
@@ -18,6 +20,22 @@ public class StockMovement {
     private String note;
     private String reason;
     private Long referenceId;
+    private String referenceType;
+    private String entryMode;
+    private String documentType;
+    private String documentSeries;
+    private String documentCorrelative;
+    private String documentReference;
+    private String destination;
+    private String adjustmentType;
+    private String generalReason;
+    private String generalNote;
+    private Long supplierId;
+    private String supplierName;
+    private String lot;
+    private LocalDate expirationDate;
+    private BigDecimal unitCost;
+    private BigDecimal movementSubtotal;
     private LocalDateTime movementDate;
 
     public Long getId() {
@@ -136,6 +154,134 @@ public class StockMovement {
 
     public void setReferenceId(Long referenceId) {
         this.referenceId = referenceId;
+    }
+
+    public String getReferenceType() {
+        return referenceType;
+    }
+
+    public void setReferenceType(String referenceType) {
+        this.referenceType = referenceType;
+    }
+
+    public String getEntryMode() {
+        return entryMode;
+    }
+
+    public void setEntryMode(String entryMode) {
+        this.entryMode = entryMode;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
+    }
+
+    public String getDocumentSeries() {
+        return documentSeries;
+    }
+
+    public void setDocumentSeries(String documentSeries) {
+        this.documentSeries = documentSeries;
+    }
+
+    public String getDocumentCorrelative() {
+        return documentCorrelative;
+    }
+
+    public void setDocumentCorrelative(String documentCorrelative) {
+        this.documentCorrelative = documentCorrelative;
+    }
+
+    public String getDocumentReference() {
+        return documentReference;
+    }
+
+    public void setDocumentReference(String documentReference) {
+        this.documentReference = documentReference;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public String getAdjustmentType() {
+        return adjustmentType;
+    }
+
+    public void setAdjustmentType(String adjustmentType) {
+        this.adjustmentType = adjustmentType;
+    }
+
+    public String getGeneralReason() {
+        return generalReason;
+    }
+
+    public void setGeneralReason(String generalReason) {
+        this.generalReason = generalReason;
+    }
+
+    public String getGeneralNote() {
+        return generalNote;
+    }
+
+    public void setGeneralNote(String generalNote) {
+        this.generalNote = generalNote;
+    }
+
+    public Long getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Long supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public String getLot() {
+        return lot;
+    }
+
+    public void setLot(String lot) {
+        this.lot = lot;
+    }
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    public BigDecimal getUnitCost() {
+        return unitCost;
+    }
+
+    public void setUnitCost(BigDecimal unitCost) {
+        this.unitCost = unitCost;
+    }
+
+    public BigDecimal getMovementSubtotal() {
+        return movementSubtotal;
+    }
+
+    public void setMovementSubtotal(BigDecimal movementSubtotal) {
+        this.movementSubtotal = movementSubtotal;
     }
 
     public LocalDateTime getMovementDate() {

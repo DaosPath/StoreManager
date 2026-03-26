@@ -117,6 +117,7 @@ public class SupplierFxView implements FxView {
         cardsScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         cardsScroll.setContent(cardsPane);
         VBox.setVgrow(cardsScroll, Priority.ALWAYS);
+        FxSupport.enhanceScrollPane(cardsScroll, 2.1);
     }
 
     private void configureFilterBar() {

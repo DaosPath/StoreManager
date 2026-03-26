@@ -59,4 +59,8 @@ public class SaleService {
     public List<Sale> findSalesByDateRange(LocalDate from, LocalDate to) throws SQLException {
         return saleDao.findSalesByDateRange(from, to);
     }
+
+    public LocalDate findEarliestSaleDate() throws SQLException {
+        return saleDao.findEarliestSaleDate();
+    }
 }

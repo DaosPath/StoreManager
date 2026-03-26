@@ -49,6 +49,9 @@ public class ProductFxView implements FxView {
     private final VBox root = new VBox(14);
     private final ObservableList<Product> visibleRows = FXCollections.observableArrayList();
     private final ListView<Product> listView = new ListView<>(visibleRows);
+    private final Label visibleCountLabel = new Label();
+    private final Label lowStockCountLabel = new Label();
+    private final Label inactiveCountLabel = new Label();
     private final TextField searchField = new TextField();
     private final Button filterButton = new Button("Filtros");
     private final Button editButton = button("Editar", "button-secondary", event -> openSelected());
@@ -67,6 +70,8 @@ public class ProductFxView implements FxView {
     public ProductFxView(ProductService productService) {
         this.productService = productService;
         root.getStyleClass().addAll("module-root", "product-module");
+        root.setFillWidth(true);
+        root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         root.getChildren().addAll(
                 FxSupport.pageHeader("Products", "Registro, edicion y desactivacion del catalogo."),
                 buildToolbar(),
@@ -154,19 +159,67 @@ public class ProductFxView implements FxView {
     }
 
     private Node buildListPane() {
-        VBox pane = new VBox(listView);
+        VBox pane = new VBox(0, buildListHeader(), listView, buildListFooter());
         pane.getStyleClass().add("product-list-pane");
+        pane.setFillWidth(true);
+        pane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        VBox.setVgrow(pane, Priority.ALWAYS);
         VBox.setVgrow(listView, Priority.ALWAYS);
         return pane;
+    }
+
+    private Node buildListHeader() {
+        HBox header = new HBox(14);
+        header.getStyleClass().add("product-list-header");
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        header.getChildren().addAll(
+                headerColumn("Codigo", "product-list-header-text", 84),
+                headerColumn("Nombre", "product-list-header-text", 160),
+                headerColumn("Categoria", "product-list-header-text", 110),
+                headerColumn("Proveedor", "product-list-header-text", 152),
+                headerColumn("Compra", "product-list-header-text product-list-header-right", 94),
+                headerColumn("Venta", "product-list-header-text product-list-header-right", 94),
+                headerColumn("Stock", "product-list-header-text product-list-header-center", 56),
+                headerColumn("Minimo", "product-list-header-text product-list-header-center", 56),
+                spacer,
+                headerColumn("Estado", "product-list-header-text", 118)
+        );
+        return header;
+    }
+
+    private Node buildListFooter() {
+        HBox footer = new HBox(12);
+        footer.getStyleClass().add("product-list-footer");
+        footer.setAlignment(Pos.CENTER_LEFT);
+
+        visibleCountLabel.getStyleClass().addAll("product-list-footer-value", "product-list-footer-value-strong");
+        lowStockCountLabel.getStyleClass().add("product-list-footer-value");
+        inactiveCountLabel.getStyleClass().add("product-list-footer-value");
+
+        HBox counts = new HBox(18,
+                footerMetric("Mostrando", visibleCountLabel),
+                footerMetric("Stock bajo", lowStockCountLabel),
+                footerMetric("Inactivos", inactiveCountLabel)
+        );
+        counts.setAlignment(Pos.CENTER_LEFT);
+
+        footer.getChildren().addAll(counts, FxSupport.spacer());
+        return footer;
     }
 
     private void configureList() {
         listView.getStyleClass().add("product-list-view");
         listView.setFocusTraversable(false);
+        listView.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         listView.setPlaceholder(emptyState());
         listView.setCellFactory(ignored -> new ProductCardCell());
         listView.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleListBackgroundClick);
         listView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> updateActionState());
+        FxSupport.enhanceListView(listView, 1.6);
     }
 
     private void updateActionState() {
@@ -182,7 +235,23 @@ public class ProductFxView implements FxView {
                         .filter(this::matchesStatus)
                         .toList()
         );
+        updateListFooter();
         restoreActiveProduct(selectedProduct);
+    }
+
+    private void updateListFooter() {
+        int visible = visibleRows.size();
+        int total = loadedProducts.size();
+        long lowStock = visibleRows.stream()
+                .filter(product -> safeInt(product.getStock()) <= safeInt(product.getMinimumStock()))
+                .count();
+        long inactive = visibleRows.stream()
+                .filter(product -> "INACTIVO".equalsIgnoreCase(product.getStatus()))
+                .count();
+
+        visibleCountLabel.setText(visible + " de " + total);
+        lowStockCountLabel.setText(String.valueOf(lowStock));
+        inactiveCountLabel.setText(String.valueOf(inactive));
     }
 
     private boolean matchesCategory(Product product) {
@@ -835,6 +904,28 @@ public class ProductFxView implements FxView {
         path.setContent("M6 6l12 12M18 6 6 18");
         path.getStyleClass().add("product-dialog-close-icon");
         return path;
+    }
+
+    private Node headerColumn(String text, String styleClasses, double width) {
+        Label label = new Label(text);
+        label.getStyleClass().addAll(styleClasses.split(" "));
+        label.setMinWidth(width);
+        label.setPrefWidth(width);
+        label.setMaxWidth(width);
+        return label;
+    }
+
+    private Node footerMetric(String labelText, Label valueLabel) {
+        Label label = new Label(labelText);
+        label.getStyleClass().add("product-list-footer-label");
+        HBox box = new HBox(6, label, valueLabel);
+        box.getStyleClass().add("product-list-footer-metric");
+        box.setAlignment(Pos.CENTER_LEFT);
+        return box;
+    }
+
+    private int safeInt(Integer value) {
+        return value == null ? 0 : value;
     }
 
     private static final class ProductDialogComboCell<T> extends ListCell<T> {

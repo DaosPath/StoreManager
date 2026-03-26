@@ -6,22 +6,23 @@ import com.manager.storemanager.model.Customer;
 import com.manager.storemanager.service.CustomerService;
 import java.util.Locale;
 import javafx.animation.PauseTransition;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -29,7 +30,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 public class CustomerFxView implements FxView {
@@ -114,6 +120,7 @@ public class CustomerFxView implements FxView {
         cardsScroll.setContent(cardsPane);
         VBox.setVgrow(cardsScroll, Priority.ALWAYS);
         cardsScroll.viewportBoundsProperty().addListener((obs, oldBounds, newBounds) -> cardsPane.setPrefWrapLength(Math.max(320, newBounds.getWidth() - 8)));
+        FxSupport.enhanceScrollPane(cardsScroll, 2.1);
     }
 
     private Node buildHeader() {
@@ -284,60 +291,190 @@ public class CustomerFxView implements FxView {
 
     private void openDialog(Customer existing) {
         try {
-            Dialog<Customer> dialog = new Dialog<>();
-            dialog.setTitle(existing == null ? "Nuevo cliente" : "Editar cliente");
-            FxSupport.applyDialogTheme(dialog.getDialogPane());
-
-            ButtonType saveType = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
-            dialog.getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
-
             TextField nameField = new TextField();
             TextField phoneField = new TextField();
             TextField documentField = new TextField();
             TextField addressField = new TextField();
-            CheckBox activeBox = new CheckBox("Activo");
-            activeBox.setSelected(true);
+            BooleanProperty activeState = new SimpleBooleanProperty(true);
 
             if (existing != null) {
                 nameField.setText(existing.getName());
                 phoneField.setText(existing.getPhone());
                 documentField.setText(existing.getDocument());
                 addressField.setText(existing.getAddress());
-                activeBox.setSelected(existing.isActive());
+                activeState.set(existing.isActive());
             }
+
+            nameField.getStyleClass().add("customer-dialog-input");
+            phoneField.getStyleClass().add("customer-dialog-input");
+            documentField.getStyleClass().add("customer-dialog-input");
+            addressField.getStyleClass().add("customer-dialog-input");
+
+            nameField.setPromptText("Nombre completo");
+            phoneField.setPromptText("Telefono");
+            documentField.setPromptText("Documento");
+            addressField.setPromptText("Direccion");
+
+            if (existing != null) {
+                documentField.setEditable(false);
+                documentField.setFocusTraversable(false);
+            }
+
+            VBox nameBox = dialogField("Nombre completo *", dialogInputShell(null, nameField), null);
+            VBox phoneBox = dialogField("Telefono", dialogInputShell(phoneGlyph(), phoneField), null);
+            VBox documentBox = dialogField(
+                    "Documento (DNI/NIT)",
+                    dialogInputShell(documentGlyph(), documentField),
+                    existing == null ? null : "El documento principal no se puede cambiar."
+            );
+            VBox addressBox = dialogField("Direccion de facturacion", dialogInputShell(locationGlyph(), addressField), null);
 
             GridPane form = new GridPane();
-            form.setHgap(12);
-            form.setVgap(12);
-            form.setPadding(new Insets(14));
-            addRow(form, 0, "Nombre", nameField);
-            addRow(form, 1, "Telefono", phoneField);
-            addRow(form, 2, "Documento", documentField);
-            addRow(form, 3, "Direccion", addressField);
-            addRow(form, 4, "Estado", activeBox);
-            dialog.getDialogPane().setContent(form);
+            form.getStyleClass().add("customer-dialog-form");
+            form.setHgap(16);
+            form.setVgap(16);
 
-            dialog.setResultConverter(button -> {
-                if (button != saveType) {
-                    return null;
-                }
-                Customer customer = existing == null ? new Customer() : existing;
-                customer.setName(nameField.getText().trim());
-                customer.setPhone(phoneField.getText().trim());
-                customer.setDocument(documentField.getText().trim());
-                customer.setAddress(addressField.getText().trim());
-                customer.setActive(activeBox.isSelected());
-                return customer;
+            ColumnConstraints left = new ColumnConstraints();
+            left.setPercentWidth(50);
+            left.setHgrow(Priority.ALWAYS);
+            ColumnConstraints right = new ColumnConstraints();
+            right.setPercentWidth(50);
+            right.setHgrow(Priority.ALWAYS);
+            form.getColumnConstraints().addAll(left, right);
+
+            form.add(nameBox, 0, 0, 2, 1);
+            form.add(phoneBox, 0, 1);
+            form.add(documentBox, 1, 1);
+            form.add(addressBox, 0, 2, 2, 1);
+
+            Stage modal = buildCustomerStage();
+            Customer[] resultHolder = new Customer[1];
+
+            StackPane avatar = new StackPane();
+            avatar.getStyleClass().add("customer-dialog-avatar");
+            Label initialsLabel = new Label(initials(existing == null ? nameField.getText() : existing.getName()));
+            initialsLabel.getStyleClass().add("customer-dialog-avatar-text");
+            avatar.getChildren().add(initialsLabel);
+
+            nameField.textProperty().addListener((obs, oldValue, newValue) -> initialsLabel.setText(initials(newValue)));
+
+            Label headName = new Label(existing == null ? "Nuevo cliente" : fallback(existing.getName(), "Cliente"));
+            headName.getStyleClass().add("customer-dialog-head-name");
+            nameField.textProperty().addListener((obs, oldValue, newValue) -> {
+                String fallbackName = existing == null ? "Nuevo cliente" : "Cliente";
+                String value = isBlank(newValue) ? fallbackName : newValue.trim();
+                headName.setText(value);
             });
 
-            Customer customer = dialog.showAndWait().orElse(null);
+            Label headDocument = new Label(fallback(existing == null ? documentField.getText() : existing.getDocument(), "Documento pendiente"));
+            headDocument.getStyleClass().add("customer-dialog-head-document");
+            documentField.textProperty().addListener((obs, oldValue, newValue) -> {
+                String value = fallback(newValue, "Documento pendiente");
+                headDocument.setText(value);
+            });
+
+            HBox headDocRow = new HBox(6, headerDocumentGlyph(), headDocument);
+            headDocRow.getStyleClass().add("customer-dialog-head-doc-row");
+            headDocRow.setAlignment(Pos.CENTER_LEFT);
+
+            VBox identity = new VBox(4, headName, headDocRow);
+            identity.getStyleClass().add("customer-dialog-identity");
+            HBox.setHgrow(identity, Priority.ALWAYS);
+
+            Button closeButton = new Button();
+            closeButton.getStyleClass().add("customer-dialog-close");
+            closeButton.setGraphic(closeGlyph());
+            closeButton.setOnAction(event -> modal.close());
+
+            HBox head = new HBox(14, avatar, identity, FxSupport.spacer(), closeButton);
+            head.getStyleClass().add("customer-dialog-head");
+            head.setAlignment(Pos.CENTER_LEFT);
+            installWindowDrag(modal, head);
+
+            Region dividerTop = dialogDivider();
+
+            Label sectionLabel = new Label("CONFIGURACION DE CUENTA");
+            sectionLabel.getStyleClass().add("customer-dialog-section-title");
+
+            Label stateTitle = new Label("Estado activo");
+            stateTitle.getStyleClass().add("customer-dialog-state-title");
+            Label stateHelp = new Label("Permite a este cliente realizar nuevas compras y generar facturas.");
+            stateHelp.getStyleClass().add("customer-dialog-state-help");
+            VBox stateText = new VBox(4, stateTitle, stateHelp);
+
+            HBox stateRow = new HBox(12, stateText, FxSupport.spacer(), stateSwitchNode(activeState));
+            stateRow.getStyleClass().add("customer-dialog-state-card");
+            stateRow.setAlignment(Pos.CENTER_LEFT);
+
+            Button cancelButton = new Button("Cancelar");
+            cancelButton.getStyleClass().addAll("button", "button-secondary", "customer-dialog-cancel");
+            cancelButton.setCancelButton(true);
+            cancelButton.setOnAction(event -> modal.close());
+
+            Button saveButton = new Button(existing == null ? "Guardar cliente" : "Guardar cambios");
+            saveButton.getStyleClass().addAll("button", "button-primary", "customer-dialog-save");
+            saveButton.setDefaultButton(true);
+            saveButton.setGraphic(saveGlyph());
+            saveButton.setOnAction(event -> {
+                try {
+                    Customer customer = existing == null ? new Customer() : existing;
+                    customer.setName(nameField.getText().trim());
+                    customer.setPhone(phoneField.getText().trim());
+                    customer.setDocument(documentField.getText().trim());
+                    customer.setAddress(addressField.getText().trim());
+                    customer.setActive(activeState.get());
+                    if (existing == null) {
+                        customerService.save(customer);
+                    } else {
+                        customerService.update(customer);
+                    }
+                    resultHolder[0] = customer;
+                    modal.close();
+                } catch (Exception exception) {
+                    FxSupport.showError("Clientes", exception.getMessage());
+                }
+            });
+
+            HBox actions = new HBox(12, cancelButton, saveButton);
+            actions.getStyleClass().add("customer-dialog-actions");
+            actions.setAlignment(Pos.CENTER_RIGHT);
+
+            VBox body = new VBox(18, form, dialogDivider(), sectionLabel, stateRow);
+            body.getStyleClass().add("customer-dialog-body");
+
+            VBox card = new VBox(0, head, dividerTop, body, dialogDivider(), actions);
+            card.getStyleClass().add("customer-dialog-card");
+            card.setMaxWidth(540);
+            card.setPrefWidth(540);
+
+            StackPane overlay = new StackPane(card);
+            overlay.getStyleClass().add("customer-dialog-overlay");
+            overlay.setPadding(new Insets(18));
+            overlay.setOnMouseClicked(event -> {
+                if (event.getTarget() == overlay) {
+                    modal.close();
+                }
+            });
+
+            StackPane shell = new StackPane(overlay);
+            shell.getStyleClass().add("customer-dialog-shell");
+
+            Scene scene = new Scene(shell);
+            scene.setFill(Color.TRANSPARENT);
+            FxSupport.applyTheme(scene);
+            scene.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    modal.close();
+                    event.consume();
+                }
+            });
+
+            modal.setScene(scene);
+            modal.showAndWait();
+
+            Customer customer = resultHolder[0];
             if (customer == null) {
                 return;
-            }
-            if (customer.getId() == null) {
-                customerService.save(customer);
-            } else {
-                customerService.update(customer);
             }
             refresh();
         } catch (Exception exception) {
@@ -345,12 +482,103 @@ public class CustomerFxView implements FxView {
         }
     }
 
-    private void addRow(GridPane grid, int row, String labelText, Node field) {
+    private VBox dialogField(String labelText, Node field, String noteText) {
         Label label = new Label(labelText);
-        label.getStyleClass().add("field-label");
-        grid.add(label, 0, row);
-        grid.add(field, 1, row);
-        GridPane.setHgrow(field, Priority.ALWAYS);
+        label.getStyleClass().add("customer-dialog-label");
+        VBox box = new VBox(8, label, field);
+        box.getStyleClass().add("customer-dialog-field");
+        if (noteText != null) {
+            HBox note = new HBox(6, noteGlyph(), noteLabel(noteText));
+            note.getStyleClass().add("customer-dialog-note-row");
+            note.setAlignment(Pos.CENTER_LEFT);
+            box.getChildren().add(note);
+        }
+        return box;
+    }
+
+    private Node dialogInputShell(Node icon, TextField field) {
+        if (icon == null) {
+            return field;
+        }
+        StackPane iconWrap = new StackPane(icon);
+        iconWrap.getStyleClass().add("customer-dialog-input-icon-wrap");
+        HBox shell = new HBox(10, iconWrap, field);
+        shell.getStyleClass().add("customer-dialog-input-shell");
+        shell.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(field, Priority.ALWAYS);
+        return shell;
+    }
+
+    private Label noteLabel(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("customer-dialog-note");
+        return label;
+    }
+
+    private Node stateSwitchNode(BooleanProperty activeState) {
+        Region track = new Region();
+        track.getStyleClass().add("customer-dialog-switch-track");
+        Region thumb = new Region();
+        thumb.getStyleClass().add("customer-dialog-switch-thumb");
+        StackPane toggle = new StackPane(track, thumb);
+        toggle.getStyleClass().add("customer-dialog-switch");
+
+        Label label = new Label();
+        label.getStyleClass().add("customer-dialog-switch-label");
+
+        Runnable syncState = () -> {
+            boolean active = activeState.get();
+            track.getStyleClass().remove("customer-dialog-switch-track-active");
+            label.getStyleClass().remove("customer-dialog-switch-label-active");
+            thumb.setTranslateX(active ? 10 : -10);
+            label.setText(active ? "Activo" : "Inactivo");
+            if (active) {
+                track.getStyleClass().add("customer-dialog-switch-track-active");
+                label.getStyleClass().add("customer-dialog-switch-label-active");
+            }
+        };
+        syncState.run();
+        activeState.addListener((obs, oldValue, newValue) -> syncState.run());
+
+        Runnable toggleState = () -> activeState.set(!activeState.get());
+        toggle.setOnMouseClicked(event -> toggleState.run());
+        label.setOnMouseClicked(event -> toggleState.run());
+
+        HBox box = new HBox(10, toggle, label);
+        box.getStyleClass().add("customer-dialog-switch-wrap");
+        box.setAlignment(Pos.CENTER_LEFT);
+        return box;
+    }
+
+    private Region dialogDivider() {
+        Region divider = new Region();
+        divider.getStyleClass().add("customer-dialog-divider");
+        return divider;
+    }
+
+    private Stage buildCustomerStage() {
+        Stage stage = new Stage(StageStyle.TRANSPARENT);
+        Window owner = root.getScene() == null ? null : root.getScene().getWindow();
+        if (owner != null) {
+            stage.initOwner(owner);
+            stage.initModality(Modality.WINDOW_MODAL);
+        } else {
+            stage.initModality(Modality.APPLICATION_MODAL);
+        }
+        stage.setResizable(false);
+        return stage;
+    }
+
+    private void installWindowDrag(Stage stage, Node dragHandle) {
+        final double[] offset = new double[2];
+        dragHandle.setOnMousePressed(event -> {
+            offset[0] = event.getSceneX();
+            offset[1] = event.getSceneY();
+        });
+        dragHandle.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - offset[0]);
+            stage.setY(event.getScreenY() - offset[1]);
+        });
     }
 
     private Customer findCustomerById(Long customerId) {
@@ -415,6 +643,34 @@ public class CustomerFxView implements FxView {
         SVGPath path = new SVGPath();
         path.setContent("M8 3.5A1.2 1.2 0 1 1 8 1.1A1.2 1.2 0 0 1 8 3.5Zm0 5.7A1.2 1.2 0 1 1 8 6.8A1.2 1.2 0 0 1 8 9.2Zm0 5.7A1.2 1.2 0 1 1 8 12.5A1.2 1.2 0 0 1 8 14.9Z");
         path.getStyleClass().add("customer-row-action-icon");
+        return path;
+    }
+
+    private SVGPath closeGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M4 4 12 12M12 4 4 12");
+        path.getStyleClass().add("customer-dialog-close-icon");
+        return path;
+    }
+
+    private SVGPath saveGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M4 8.5 7 11.5 14 4.5");
+        path.getStyleClass().add("customer-dialog-save-icon");
+        return path;
+    }
+
+    private SVGPath noteGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M8 1.8a6.2 6.2 0 1 1 0 12.4A6.2 6.2 0 0 1 8 1.8zm0 3.1a.9.9 0 1 0 0 1.8a.9.9 0 0 0 0-1.8zm-.8 3.3h1.6v3.6H7.2V8.2z");
+        path.getStyleClass().add("customer-dialog-note-icon");
+        return path;
+    }
+
+    private SVGPath headerDocumentGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M5 2h6l3 3v8.5a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 4 13.5v-10A1.5 1.5 0 0 1 5.5 2Zm5 .9V5.4h2.5L10 2.9ZM6.2 8.7h5.6v1H6.2v-1Z");
+        path.getStyleClass().add("customer-dialog-head-doc-icon");
         return path;
     }
 

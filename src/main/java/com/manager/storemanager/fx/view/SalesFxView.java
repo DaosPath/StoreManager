@@ -106,6 +106,7 @@ public class SalesFxView implements FxView {
         productScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         productScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         productScroll.setContent(productGrid);
+        FxSupport.enhanceScrollPane(productScroll, 1.9);
         productContent.getStyleClass().add("sales-product-content");
         productContent.getChildren().add(productScroll);
         VBox.setVgrow(productContent, Priority.ALWAYS);
@@ -195,6 +196,7 @@ public class SalesFxView implements FxView {
         chipScroll.setFitToWidth(true);
         chipScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         chipScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        FxSupport.enhanceScrollPane(chipScroll, 1.65);
 
         panel.getChildren().addAll(head, searchShell(), chipScroll, productContent);
         VBox.setVgrow(productContent, Priority.ALWAYS);
@@ -244,6 +246,7 @@ public class SalesFxView implements FxView {
         scrollPane.setPannable(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        FxSupport.enhanceScrollPane(scrollPane, 2.0);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
         panel.getChildren().add(scrollPane);
@@ -662,6 +665,7 @@ public class SalesFxView implements FxView {
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scroll.setMaxWidth(560);
+        FxSupport.enhanceScrollPane(scroll, 2.0);
 
         StackPane overlay = new StackPane(scroll);
         overlay.getStyleClass().add("sales-popup-overlay");

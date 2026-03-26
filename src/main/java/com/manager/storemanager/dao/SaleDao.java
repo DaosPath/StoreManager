@@ -34,8 +34,8 @@ public class SaleDao {
         String updateStockSql = "UPDATE productos SET stock = ? WHERE id = ?";
         String movementSql = """
                 INSERT INTO movimientos_inventario
-                (producto_id, usuario_id, tipo_movimiento, cantidad, stock_anterior, stock_nuevo, motivo, referencia_id)
-                VALUES (?, ?, 'SALIDA', ?, ?, ?, ?, ?)
+                (producto_id, usuario_id, tipo_movimiento, cantidad, stock_anterior, stock_nuevo, motivo, referencia_tipo, referencia_id)
+                VALUES (?, ?, 'SALIDA', ?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection connection = DatabaseConnection.getConnection()) {
@@ -104,7 +104,8 @@ public class SaleDao {
                     movementStatement.setInt(4, currentStock);
                     movementStatement.setInt(5, newStock);
                     movementStatement.setString(6, "Venta #" + saleId);
-                    movementStatement.setLong(7, saleId);
+                    movementStatement.setString(7, "VENTA");
+                    movementStatement.setLong(8, saleId);
                     movementStatement.executeUpdate();
                 }
 
@@ -165,5 +166,18 @@ public class SaleDao {
             }
         }
         return sales;
+    }
+
+    public LocalDate findEarliestSaleDate() throws SQLException {
+        String sql = "SELECT MIN(DATE(fecha_venta)) AS fecha_minima FROM ventas";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            if (!resultSet.next()) {
+                return null;
+            }
+            Date date = resultSet.getDate("fecha_minima");
+            return date == null ? null : date.toLocalDate();
+        }
     }
 }

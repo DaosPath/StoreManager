@@ -48,6 +48,9 @@ public class DashboardFxView implements FxView {
     private final Label summaryProducts = label("dashboard-summary-item");
     private final Label summaryCustomers = label("dashboard-summary-item");
     private final Label summarySuppliers = label("dashboard-summary-item");
+    private final Label summaryProductsMeta = label("dashboard-summary-pill");
+    private final Label summaryCustomersMeta = label("dashboard-summary-pill");
+    private final Label summarySuppliersMeta = label("dashboard-summary-pill");
     private final Label checkSales = label("dashboard-task-text");
     private final Label checkStock = label("dashboard-task-text");
     private final Label checkCatalog = label("dashboard-task-text");
@@ -88,6 +91,9 @@ public class DashboardFxView implements FxView {
 
         Label title = new Label("Dashboard");
         title.getStyleClass().add("dashboard-title");
+        Label subtitle = new Label("Resumen general y metricas de tu negocio.");
+        subtitle.getStyleClass().add("dashboard-subtitle");
+        VBox copy = new VBox(4, title, subtitle);
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -105,7 +111,7 @@ public class DashboardFxView implements FxView {
         HBox statusCard = new HBox(12, statusIcon, statusCopy);
         statusCard.getStyleClass().add("dashboard-status-card");
 
-        header.getChildren().addAll(title, spacer, statusCard);
+        header.getChildren().addAll(copy, spacer, statusCard);
         return header;
     }
 
@@ -126,9 +132,9 @@ public class DashboardFxView implements FxView {
         grid.getColumnConstraints().addAll(col1, col2, col3, col4);
 
         grid.add(buildSalesCard(), 0, 0);
-        grid.add(buildMetricCard("Productos activos", productsValue, true), 1, 0);
-        grid.add(buildMetricCard("Clientes", customersValue, true), 2, 0);
-        grid.add(buildMetricCard("Proveedores", suppliersValue, true), 3, 0);
+        grid.add(buildMetricCard("Productos\nactivos", productsValue, "dashboard-card-green", productsGlyph()), 1, 0);
+        grid.add(buildMetricCard("Clientes", customersValue, "dashboard-card-green", customersGlyph()), 2, 0);
+        grid.add(buildMetricCard("Proveedores", suppliersValue, "dashboard-card-green", suppliersGlyph()), 3, 0);
         grid.add(buildStockCard(), 0, 1);
         grid.add(buildDataCard(), 1, 1, 2, 2);
         grid.add(buildSummaryCard(), 0, 2);
@@ -184,15 +190,17 @@ public class DashboardFxView implements FxView {
         return card;
     }
 
-    private Node buildMetricCard(String titleText, Label valueLabel, boolean green) {
+    private Node buildMetricCard(String titleText, Label valueLabel, String accentStyle, Node icon) {
         Label title = new Label(titleText);
         title.getStyleClass().add("dashboard-card-title");
+        StackPane iconWrap = new StackPane(icon);
+        iconWrap.getStyleClass().add("dashboard-metric-icon-wrap");
+        HBox top = new HBox(title, FxSupport.spacer(), iconWrap);
+        top.getStyleClass().add("dashboard-metric-head");
 
-        VBox card = green
-                ? card("dashboard-card", "dashboard-card-metric", "dashboard-card-green")
-                : card("dashboard-card", "dashboard-card-metric");
+        VBox card = card("dashboard-card", "dashboard-card-metric", accentStyle);
         card.setPrefHeight(124);
-        card.getChildren().addAll(title, valueLabel);
+        card.getChildren().addAll(top, valueLabel);
         return card;
     }
 
@@ -241,7 +249,11 @@ public class DashboardFxView implements FxView {
     private Node buildSummaryCard() {
         Label title = new Label("Resumen operativo");
         title.getStyleClass().add("dashboard-card-title");
-        VBox list = new VBox(10, summaryProducts, summaryCustomers, summarySuppliers);
+        VBox list = new VBox(10,
+                summaryRow(summaryGlyph("product"), summaryProducts, summaryProductsMeta),
+                summaryRow(summaryGlyph("customer"), summaryCustomers, summaryCustomersMeta),
+                summaryRow(summaryGlyph("supplier"), summarySuppliers, summarySuppliersMeta)
+        );
         VBox card = card("dashboard-card", "dashboard-card-summary");
         card.setPrefHeight(156);
         card.getChildren().addAll(title, list);
@@ -253,7 +265,7 @@ public class DashboardFxView implements FxView {
         title.getStyleClass().add("dashboard-card-title");
 
         VBox tasks = new VBox(10,
-                taskItem(checkSales, true),
+                taskItem(checkSales, false),
                 taskItem(checkStock, false),
                 taskItem(checkCatalog, false)
         );
@@ -270,6 +282,16 @@ public class DashboardFxView implements FxView {
         HBox row = new HBox(text, FxSupport.spacer(), valueLabel);
         row.getStyleClass().add(active ? "dashboard-mini-row-active" : "dashboard-mini-row");
         row.setPadding(new Insets(8, 10, 8, 10));
+        return row;
+    }
+
+    private Node summaryRow(Node icon, Label textLabel, Label metaLabel) {
+        StackPane iconWrap = new StackPane(icon);
+        iconWrap.getStyleClass().add("dashboard-summary-icon-wrap");
+        HBox row = new HBox(10, iconWrap, textLabel, FxSupport.spacer(), metaLabel);
+        row.getStyleClass().add("dashboard-summary-row");
+        row.setPadding(new Insets(0, 0, 0, 0));
+        row.setMinHeight(24);
         return row;
     }
 
@@ -318,6 +340,38 @@ public class DashboardFxView implements FxView {
         return path;
     }
 
+    private SVGPath productsGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16ZM3.3 7l8.7 5 8.7-5M12 22V12");
+        path.getStyleClass().add("dashboard-metric-icon");
+        return path;
+    }
+
+    private SVGPath customersGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8a4 4 0 0 0 0 8zm13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75");
+        path.getStyleClass().add("dashboard-metric-icon");
+        return path;
+    }
+
+    private SVGPath suppliersGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M10 17h4V5H2v12h3M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h2M7.5 20a2.5 2.5 0 1 0 0-5a2.5 2.5 0 0 0 0 5zm10 0a2.5 2.5 0 1 0 0-5a2.5 2.5 0 0 0 0 5z");
+        path.getStyleClass().add("dashboard-metric-icon");
+        return path;
+    }
+
+    private SVGPath summaryGlyph(String kind) {
+        SVGPath path = new SVGPath();
+        path.getStyleClass().add("dashboard-summary-icon");
+        path.setContent(switch (kind) {
+            case "product" -> "m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16ZM3.3 7l8.7 5 8.7-5M12 22V12";
+            case "customer" -> "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8a4 4 0 0 0 0 8z";
+            default -> "M10 17h4V5H2v12h3M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h2M7.5 20a2.5 2.5 0 1 0 0-5a2.5 2.5 0 0 0 0 5zm10 0a2.5 2.5 0 1 0 0-5a2.5 2.5 0 0 0 0 5z";
+        });
+        return path;
+    }
+
     private void applyEmptyState() {
         salesValue.setText("$0,00");
         salesMessage.setText("Sin ventas registradas hoy.");
@@ -332,9 +386,12 @@ public class DashboardFxView implements FxView {
         factsProducts.setText("0");
         factsSuppliers.setText("0");
         factsSuppliersSecondary.setText("0");
-        summaryProducts.setText("Catalogo (0 productos)");
-        summaryCustomers.setText("Base de clientes (0 registros)");
-        summarySuppliers.setText("Abastecimiento (0 proveedores)");
+        summaryProducts.setText("Catalogo");
+        summaryCustomers.setText("Base de clientes");
+        summarySuppliers.setText("Abastecimiento");
+        summaryProductsMeta.setText("0 productos");
+        summaryCustomersMeta.setText("0 registros");
+        summarySuppliersMeta.setText("0 proveedores");
         checkSales.setText("Verificar apertura y registro de ventas.");
         checkStock.setText("El nivel de stock se mantiene estable por ahora.");
         checkCatalog.setText("Mantener catalogo, clientes y proveedores consistentes.");
@@ -363,9 +420,12 @@ public class DashboardFxView implements FxView {
         factsProducts.setText(String.valueOf(products));
         factsSuppliers.setText(String.valueOf(suppliers));
         factsSuppliersSecondary.setText(String.valueOf(suppliers));
-        summaryProducts.setText("Catalogo (" + products + " productos)");
-        summaryCustomers.setText("Base de clientes (" + customers + " registros)");
-        summarySuppliers.setText("Abastecimiento (" + suppliers + " proveedores)");
+        summaryProducts.setText("Catalogo");
+        summaryCustomers.setText("Base de clientes");
+        summarySuppliers.setText("Abastecimiento");
+        summaryProductsMeta.setText(products + " productos");
+        summaryCustomersMeta.setText(customers + " registros");
+        summarySuppliersMeta.setText(suppliers + " proveedores");
 
         if (lowStock > 0) {
             stockFlag.setText("Atencion");

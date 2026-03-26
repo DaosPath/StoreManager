@@ -7,29 +7,53 @@
   <link rel="stylesheet" href="reports.css" />
 </head>
 <body>
-  <main class="layout">
-    <section class="report-header">
-      <div>
-        <p class="eyebrow">Centro analitico</p>
-        <h1 id="reportTitle">Reportes</h1>
-        <p id="reportSubtitle" class="subtitle">Selecciona una vista para cargar informacion.</p>
-      </div>
-      <aside class="counter-box">
-        <span class="counter-label">Resumen</span>
-        <strong id="reportBadge">0 registros</strong>
-      </aside>
-    </section>
+  <main class="report-shell">
+    <section class="report-card">
+      <header class="report-card-header">
+        <div class="report-header-main">
+          <div class="report-heading">
+            <span id="reportChip" class="report-chip">Centro analitico</span>
+            <h2 id="reportTitle">Ventas del dia</h2>
+            <p id="reportSubtitle" class="report-subtitle">Movimientos registrados para la fecha actual.</p>
+          </div>
+          <div id="reportPresets" class="report-presets" hidden>
+            <button class="report-preset" data-preset="yesterday" type="button">Ayer</button>
+            <button class="report-preset" data-preset="7_days" type="button">7 dias</button>
+            <button class="report-preset" data-preset="30_days" type="button">30 dias</button>
+            <button class="report-preset" data-preset="180_days" type="button">180 dias</button>
+            <button class="report-preset" data-preset="360_days" type="button">360 dias</button>
+            <button class="report-preset" data-preset="total" type="button">Total</button>
+          </div>
+        </div>
+        <aside class="report-summary-card">
+          <span class="report-summary-label">Resumen</span>
+          <div class="report-summary-line">
+            <strong id="reportCount">0</strong>
+            <span id="reportSummaryText">registros encontrados.</span>
+          </div>
+        </aside>
+      </header>
 
-    <section class="panel note-panel">
-      <p id="reportNote" class="note-text">Los datos se actualizaran desde la aplicacion JavaFX.</p>
-    </section>
+      <section class="report-note">
+        <div class="report-note-icon" aria-hidden="true">i</div>
+        <p id="reportNote">Usa este reporte para validar el cierre de caja y auditar las ventas exactas procesadas durante el turno actual.</p>
+      </section>
 
-    <section class="panel table-panel">
-      <div id="emptyState" class="empty-state">No hay datos para mostrar en este reporte.</div>
-      <table id="reportTable" class="report-table" hidden>
-        <thead id="tableHead"></thead>
-        <tbody id="tableBody"></tbody>
-      </table>
+      <section id="emptyState" class="report-empty">
+        <div class="report-empty-icon" aria-hidden="true">
+          <span class="report-empty-icon-inner"></span>
+        </div>
+        <strong id="emptyTitle">No hay datos para mostrar</strong>
+        <p id="emptyMessage">No se encontraron registros de ventas para el rango de fechas seleccionado.</p>
+        <button id="emptyAction" class="report-empty-button" type="button">Cambiar fechas</button>
+      </section>
+
+      <section id="tableWrap" class="report-table-wrap" hidden>
+        <table id="reportTable" class="report-table">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </section>
     </section>
   </main>
 

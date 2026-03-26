@@ -4,6 +4,8 @@ import com.manager.storemanager.config.AppConfig;
 import com.manager.storemanager.fx.FxSupport;
 import com.manager.storemanager.fx.FxView;
 import com.manager.storemanager.model.Product;
+import com.manager.storemanager.model.StockEntryItem;
+import com.manager.storemanager.model.StockEntryRequest;
 import com.manager.storemanager.model.StockMovement;
 import com.manager.storemanager.model.Supplier;
 import com.manager.storemanager.model.User;
@@ -28,6 +30,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -53,8 +56,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.geometry.Side;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 public class StockManagementFxView implements FxView {
@@ -116,11 +124,12 @@ public class StockManagementFxView implements FxView {
     private final Label unitsSummaryValue = new Label("0 unidades");
     private final Label amountSummaryValue = new Label(CurrencyUtils.format(BigDecimal.ZERO));
 
+    private final Button entryBackButton = new Button();
     private final Button entryButton = new Button("Nueva entrada");
     private final Button historyButton = new Button("Historial");
     private final Button refreshHistoryButton = new Button("Actualizar");
     private final Button historyRefreshButton = new Button();
-    private final Button historyReportButton = new Button("Reporte\nHistorial");
+    private final Button historyReportButton = new Button("Resumen\nstock");
     private final Button backToEntryButton = new Button("Nueva\nentrada");
     private final Button addRowButton = new Button("Anadir fila");
     private final Button saveButton = new Button("Guardar movimiento");
@@ -202,32 +211,28 @@ public class StockManagementFxView implements FxView {
     }
 
     private void buildTopBar() {
-        topBar.getStyleClass().add("stock-topbar");
+        topBar.getStyleClass().addAll("stock-topbar", "stock-entry-topbar");
 
-        StackPane titlePill = new StackPane(new Label("Gestion de stock"));
-        titlePill.getStyleClass().add("stock-title-pill");
-        ((Label) titlePill.getChildren().get(0)).getStyleClass().add("stock-title-text");
-        titlePill.setPrefWidth(350);
-        topBar.setCenter(titlePill);
+        entryBackButton.getStyleClass().addAll("button", "button-secondary", "stock-entry-back");
+        entryBackButton.setGraphic(backGlyph());
+        entryBackButton.setOnAction(event -> switchWorkspace(WorkspaceMode.HISTORY));
 
-        entryButton.getStyleClass().addAll("button", "stock-top-action", "stock-top-action-primary");
-        historyButton.getStyleClass().addAll("button", "stock-top-action");
-        refreshHistoryButton.getStyleClass().addAll("button", "button-secondary", "stock-history-refresh");
         addRowButton.getStyleClass().addAll("button", "stock-inline-action");
         saveButton.getStyleClass().addAll("button", "button-primary", "stock-save-button");
+        saveButton.setGraphic(saveGlyph());
 
-        entryButton.setGraphic(smallPlusGlyph());
         addRowButton.setGraphic(smallPlusGlyph());
-
-        entryButton.setOnAction(event -> switchWorkspace(WorkspaceMode.ENTRY));
-        historyButton.setOnAction(event -> switchWorkspace(WorkspaceMode.HISTORY));
         refreshHistoryButton.setOnAction(event -> refresh());
         addRowButton.setOnAction(event -> addEntryRow());
         saveButton.setOnAction(event -> saveMovement());
 
-        HBox actions = new HBox(10, historyButton, entryButton);
-        actions.setAlignment(Pos.CENTER_RIGHT);
-        topBar.setRight(actions);
+        HBox left = new HBox(14, entryBackButton, FxSupport.pageHeader("Nueva Entrada", "Registra el ingreso de productos a tu inventario."));
+        left.getStyleClass().add("stock-entry-header-wrap");
+        left.setAlignment(Pos.CENTER_LEFT);
+
+        topBar.setLeft(left);
+        topBar.setCenter(null);
+        topBar.setRight(null);
     }
 
     private void buildEntryView() {
@@ -240,9 +245,11 @@ public class StockManagementFxView implements FxView {
 
         entryScroll.getStyleClass().add("stock-entry-scroll");
         entryScroll.setFitToWidth(true);
+        entryScroll.setPannable(true);
         entryScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         entryScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         entryScroll.setContent(content);
+        FxSupport.enhanceScrollPane(entryScroll, 2.35);
     }
 
     private Node movementSection() {
@@ -270,8 +277,9 @@ public class StockManagementFxView implements FxView {
         HBox.setHgrow(formHost, Priority.ALWAYS);
 
         VBox previewCard = previewCard();
-        previewCard.setPrefWidth(300);
-        previewCard.setMinWidth(300);
+        previewCard.setPrefWidth(320);
+        previewCard.setMinWidth(320);
+        previewCard.setMaxWidth(320);
 
         HBox body = new HBox(18, formHost, previewCard);
         body.getStyleClass().add("stock-data-layout");
@@ -289,7 +297,7 @@ public class StockManagementFxView implements FxView {
         titles.getStyleClass().add("stock-section-head");
         Label title = new Label("Detalle de productos");
         title.getStyleClass().add("stock-section-title");
-        Label subtitle = new Label("Carga cantidades, costo unitario y referencias del movimiento por cada producto.");
+        Label subtitle = new Label("Carga cantidades, costo unitario y referencias por cada producto.");
         subtitle.getStyleClass().add("stock-section-subtitle");
         titles.getChildren().addAll(title, subtitle);
 
@@ -298,10 +306,15 @@ public class StockManagementFxView implements FxView {
 
         detailRowsBox.getStyleClass().add("stock-row-list");
 
+        VBox rowsChip = summaryChip("Filas", rowsSummaryValue);
+        VBox unitsChip = summaryChip("Unidades", unitsSummaryValue);
+        VBox amountChip = summaryChip("Monto total", amountSummaryValue);
+        amountChip.getStyleClass().add("stock-summary-chip-emphasis");
+
         HBox summary = new HBox(10,
-                summaryChip("Filas", rowsSummaryValue),
-                summaryChip("Unidades", unitsSummaryValue),
-                summaryChip("Monto", amountSummaryValue),
+                rowsChip,
+                unitsChip,
+                amountChip,
                 FxSupport.spacer(),
                 saveButton
         );
@@ -406,8 +419,13 @@ public class StockManagementFxView implements FxView {
         Label subtitle = new Label("Vista previa del movimiento que vas a registrar.");
         subtitle.getStyleClass().add("stock-preview-copy");
         titles.getChildren().addAll(title, subtitle);
+        HBox.setHgrow(titles, Priority.ALWAYS);
+        StackPane iconWrap = new StackPane(documentPreviewGlyph());
+        iconWrap.getStyleClass().add("stock-preview-icon-wrap");
         previewBadge.getStyleClass().add("stock-preview-badge");
-        head.getChildren().addAll(titles, FxSupport.spacer(), previewBadge);
+        previewBadge.setMinWidth(78);
+        previewBadge.setMaxWidth(78);
+        head.getChildren().addAll(titles, FxSupport.spacer(), previewBadge, iconWrap);
 
         VBox focusBox = new VBox(10,
                 previewMetric("Tipo", previewTypeValue),
@@ -467,7 +485,7 @@ public class StockManagementFxView implements FxView {
         return box;
     }
 
-    private Node summaryChip(String titleText, Label valueLabel) {
+    private VBox summaryChip(String titleText, Label valueLabel) {
         Label title = new Label(titleText);
         title.getStyleClass().add("stock-summary-title");
         valueLabel.getStyleClass().add("stock-summary-value");
@@ -576,6 +594,7 @@ public class StockManagementFxView implements FxView {
         stockTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         stockTable.setPlaceholder(emptyTable("Sin productos cargados."));
         stockTable.setFixedCellSize(58);
+        FxSupport.enhanceTableView(stockTable, 1.65);
 
         movementTable.getStyleClass().addAll("stock-history-table", "stock-movement-table");
         movementTable.getColumns().add(movementDateColumn());
@@ -587,6 +606,7 @@ public class StockManagementFxView implements FxView {
         movementTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         movementTable.setPlaceholder(emptyTable("Sin movimientos registrados."));
         movementTable.setFixedCellSize(66);
+        FxSupport.enhanceTableView(movementTable, 1.65);
     }
 
     private void switchWorkspace(WorkspaceMode mode) {
@@ -594,14 +614,6 @@ public class StockManagementFxView implements FxView {
         contentHost.getChildren().setAll(mode == WorkspaceMode.ENTRY ? entryScroll : historyView);
         topBar.setManaged(mode == WorkspaceMode.ENTRY);
         topBar.setVisible(mode == WorkspaceMode.ENTRY);
-
-        entryButton.getStyleClass().remove("stock-top-action-active");
-        historyButton.getStyleClass().remove("stock-top-action-active");
-        if (mode == WorkspaceMode.ENTRY) {
-            entryButton.getStyleClass().add("stock-top-action-active");
-        } else {
-            historyButton.getStyleClass().add("stock-top-action-active");
-        }
     }
 
     private void updateMovementMode() {
@@ -618,9 +630,7 @@ public class StockManagementFxView implements FxView {
     }
 
     private void updatePreview() {
-        previewBadge.setText(movementMode == MovementMode.PURCHASE ? "Compra" : "Ajuste");
-        previewBadge.getStyleClass().removeAll("stock-preview-badge-manual", "stock-preview-badge-purchase");
-        previewBadge.getStyleClass().add(movementMode == MovementMode.PURCHASE ? "stock-preview-badge-purchase" : "stock-preview-badge-manual");
+        boolean previewReady;
 
         if (movementMode == MovementMode.PURCHASE) {
             previewTypeValue.setText(safeText(documentTypeBox.getValue(), "FACTURA"));
@@ -637,12 +647,22 @@ public class StockManagementFxView implements FxView {
             }
             Supplier supplier = supplierBox.getValue();
             previewSupplierValue.setText(supplier == null ? "Sin proveedor" : safeText(supplier.getName(), "Sin proveedor"));
+            previewReady = supplier != null && !reference.isBlank() && !correlative.isBlank();
         } else {
             previewTypeValue.setText(safeText(adjustmentTypeBox.getValue(), "AJUSTE"));
             previewReferenceValue.setText(safeText(manualReasonField.getText(), "Ajuste puntual"));
             previewSupplierValue.setText("No aplica");
+            previewReady = !safeText(manualReasonField.getText(), "").trim().isBlank();
         }
 
+        previewBadge.setText(previewReady ? "Completo" : "Pendiente");
+        previewBadge.getStyleClass().removeAll(
+                "stock-preview-badge-manual",
+                "stock-preview-badge-purchase",
+                "stock-preview-badge-ready",
+                "stock-preview-badge-waiting"
+        );
+        previewBadge.getStyleClass().add(previewReady ? "stock-preview-badge-ready" : "stock-preview-badge-waiting");
         previewDestinationValue.setText(safeText(currentDestination(), "Almacen principal"));
         previewRowsValue.setText(detailRows.stream().filter(EntryRow::hasProduct).count() + " cargadas");
     }
@@ -715,9 +735,22 @@ public class StockManagementFxView implements FxView {
                 row.validate();
             }
 
+            StockEntryRequest request = new StockEntryRequest();
+            request.setUser(currentUser);
+            request.setEntryMode(movementMode == MovementMode.PURCHASE ? "COMPRA" : "AJUSTE");
+            request.setSupplier(supplierBox.getValue());
+            request.setDocumentType(documentTypeBox.getValue());
+            request.setSeries(safeText(seriesField.getText(), "").trim());
+            request.setCorrelative(safeText(correlativeField.getText(), "").trim());
+            request.setDestination(safeText(currentDestination(), "Almacen principal"));
+            request.setAdjustmentType(adjustmentTypeBox.getValue());
+            request.setGeneralReason(safeText(manualReasonField.getText(), "").trim());
+            request.setNote(safeText(noteArea.getText(), "").trim());
             for (EntryRow row : activeRows) {
-                stockService.registerStockEntry(row.product(), row.quantityValue(), buildReason(row), currentUser);
+                request.getItems().add(row.toEntryItem());
             }
+
+            stockService.registerStockEntry(request);
 
             FxSupport.showInfo("Gestion de stock", "Movimiento registrado.");
             clearEntryForm();
@@ -745,37 +778,10 @@ public class StockManagementFxView implements FxView {
         updateMovementMode();
     }
 
-    private String buildReason(EntryRow row) {
-        String destination = safeText(currentDestination(), "Almacen principal");
-        String note = safeText(noteArea.getText(), "").trim();
-        if (movementMode == MovementMode.PURCHASE) {
-            String supplier = supplierBox.getValue() == null ? "Sin proveedor" : safeText(supplierBox.getValue().getName(), "Sin proveedor");
-            String documentType = safeText(documentTypeBox.getValue(), "FACTURA");
-            String reference = safeText(seriesField.getText(), "").trim() + "-" + safeText(correlativeField.getText(), "").trim();
-            return "Compra proveedor=" + supplier
-                    + " | doc=" + documentType + " " + reference
-                    + " | destino=" + destination
-                    + " | costo=" + row.unitCostText()
-                    + optionalChunk("lote", row.lot())
-                    + optionalChunk("vence", row.expiration())
-                    + optionalChunk("nota", note);
-        }
-        return "Ajuste " + safeText(adjustmentTypeBox.getValue(), "manual")
-                + " | motivo=" + safeText(manualReasonField.getText(), "").trim()
-                + " | destino=" + destination
-                + optionalChunk("lote", row.lot())
-                + optionalChunk("vence", row.expiration())
-                + optionalChunk("nota", note);
-    }
-
     private String currentDestination() {
         return movementMode == MovementMode.PURCHASE
                 ? purchaseDestinationBox.getValue()
                 : manualDestinationBox.getValue();
-    }
-
-    private String optionalChunk(String key, String value) {
-        return value == null || value.isBlank() ? "" : " | " + key + "=" + value;
     }
 
     private List<Supplier> activeSuppliers(List<Supplier> suppliers) {
@@ -1074,13 +1080,131 @@ public class StockManagementFxView implements FxView {
         int lowStock = (int) filteredStockRows.stream()
                 .filter(product -> safeInt(product.getStock()) <= safeInt(product.getMinimumStock()))
                 .count();
-        FxSupport.showInfo(
-                "Gestion de stock",
-                "Productos visibles: " + totalProducts
-                + "\nUnidades disponibles: " + totalUnits
-                + "\nProductos en reposicion: " + lowStock
-                + "\nMovimientos registrados: " + movementRows.size()
-        );
+        int movementCount = movementRows.size();
+
+        Stage modal = buildStockSummaryStage();
+
+        StackPane overlay = new StackPane();
+        overlay.getStyleClass().add("stock-summary-overlay");
+
+        VBox card = new VBox(18);
+        card.getStyleClass().add("stock-summary-dialog-card");
+        card.setPrefWidth(392);
+        card.setMaxWidth(392);
+
+        HBox header = new HBox(12);
+        header.getStyleClass().add("stock-summary-dialog-head");
+
+        StackPane infoWrap = new StackPane(stockSummaryInfoGlyph());
+        infoWrap.getStyleClass().add("stock-summary-dialog-info-wrap");
+
+        Button closeButton = new Button();
+        closeButton.getStyleClass().add("stock-summary-dialog-close");
+        closeButton.setGraphic(closeGlyph());
+        closeButton.setOnAction(event -> modal.close());
+
+        header.getChildren().addAll(infoWrap, FxSupport.spacer(), closeButton);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        VBox titles = new VBox(4);
+        Label title = new Label("Resumen de stock");
+        title.getStyleClass().add("stock-summary-dialog-title");
+        Label subtitle = new Label("Informacion actual de los productos listados.");
+        subtitle.getStyleClass().add("stock-summary-dialog-subtitle");
+        titles.getChildren().addAll(title, subtitle);
+
+        GridPane metrics = new GridPane();
+        metrics.getStyleClass().add("stock-summary-dialog-grid");
+        metrics.setHgap(12);
+        metrics.setVgap(12);
+
+        ColumnConstraints leftColumn = new ColumnConstraints();
+        leftColumn.setPercentWidth(50);
+        leftColumn.setHgrow(Priority.ALWAYS);
+        ColumnConstraints rightColumn = new ColumnConstraints();
+        rightColumn.setPercentWidth(50);
+        rightColumn.setHgrow(Priority.ALWAYS);
+        metrics.getColumnConstraints().setAll(leftColumn, rightColumn);
+
+        metrics.add(summaryMetricCard("PRODUCTOS", String.valueOf(totalProducts), stockSummaryProductsGlyph(), false), 0, 0);
+        metrics.add(summaryMetricCard("UNIDADES", String.valueOf(totalUnits), stockSummaryUnitsGlyph(), true), 1, 0);
+        metrics.add(summaryMetricCard("REPOSICION", String.valueOf(lowStock), refreshGlyph(), false), 0, 1);
+        metrics.add(summaryMetricCard("MOVIMIENTOS", String.valueOf(movementCount), historyGlyph(), false), 1, 1);
+
+        Separator divider = new Separator();
+        divider.getStyleClass().add("stock-summary-dialog-divider");
+
+        HBox actions = new HBox();
+        actions.getStyleClass().add("stock-summary-dialog-actions");
+        Button acceptButton = new Button("Aceptar");
+        acceptButton.getStyleClass().addAll("button", "button-primary", "stock-summary-dialog-accept");
+        acceptButton.setOnAction(event -> modal.close());
+        actions.getChildren().addAll(FxSupport.spacer(), acceptButton);
+        actions.setAlignment(Pos.CENTER_LEFT);
+
+        card.getChildren().addAll(header, titles, metrics, divider, actions);
+        overlay.getChildren().add(card);
+
+        Scene scene = new Scene(overlay);
+        scene.setFill(Color.TRANSPARENT);
+        FxSupport.applyTheme(scene);
+        scene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                modal.close();
+                event.consume();
+            }
+        });
+
+        installWindowDrag(modal, header);
+
+        modal.setScene(scene);
+        modal.showAndWait();
+    }
+
+    private VBox summaryMetricCard(String labelText, String valueText, Node icon, boolean highlight) {
+        Label label = new Label(labelText);
+        label.getStyleClass().add("stock-summary-metric-label");
+
+        Label value = new Label(valueText);
+        value.getStyleClass().add("stock-summary-metric-value");
+
+        HBox top = new HBox(8, icon, label);
+        top.setAlignment(Pos.CENTER_LEFT);
+
+        VBox card = new VBox(16, top, value);
+        card.getStyleClass().add("stock-summary-metric-card");
+        if (highlight) {
+            card.getStyleClass().add("stock-summary-metric-card-highlight");
+            label.getStyleClass().add("stock-summary-metric-label-highlight");
+            value.getStyleClass().add("stock-summary-metric-value-highlight");
+        }
+        VBox.setVgrow(card, Priority.ALWAYS);
+        return card;
+    }
+
+    private Stage buildStockSummaryStage() {
+        Stage stage = new Stage(StageStyle.TRANSPARENT);
+        Window owner = root.getScene() == null ? null : root.getScene().getWindow();
+        if (owner != null) {
+            stage.initOwner(owner);
+            stage.initModality(Modality.WINDOW_MODAL);
+        } else {
+            stage.initModality(Modality.APPLICATION_MODAL);
+        }
+        stage.setResizable(false);
+        return stage;
+    }
+
+    private void installWindowDrag(Stage stage, Node dragHandle) {
+        final double[] offset = new double[2];
+        dragHandle.setOnMousePressed(event -> {
+            offset[0] = event.getSceneX();
+            offset[1] = event.getSceneY();
+        });
+        dragHandle.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - offset[0]);
+            stage.setY(event.getScreenY() - offset[1]);
+        });
     }
 
     private TableColumn<Product, Product> stockCodeColumn() {
@@ -1445,6 +1569,27 @@ public class StockManagementFxView implements FxView {
         return path;
     }
 
+    private Node backGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M11.5 3.5 5.5 9.5l6 6");
+        path.getStyleClass().add("stock-entry-back-icon");
+        return path;
+    }
+
+    private Node saveGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M4 8.5 7 11.5 14 4.5");
+        path.getStyleClass().add("stock-save-icon");
+        return path;
+    }
+
+    private Node documentPreviewGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M5 3h5.8L14 6.2v7.5c0 1.2-.9 2.1-2.1 2.1H5.1C3.9 15.8 3 14.9 3 13.7V5.1C3 3.9 3.9 3 5.1 3zm5.1 1.4v2.3h2.3L10.2 4.4zM6 9.2h5.4M6 11.7h5.4");
+        path.getStyleClass().add("stock-preview-doc-icon");
+        return path;
+    }
+
     private Node lightPlusGlyph() {
         SVGPath path = new SVGPath();
         path.setContent("M10 4v12M4 10h12");
@@ -1501,6 +1646,34 @@ public class StockManagementFxView implements FxView {
         return path;
     }
 
+    private Node stockSummaryInfoGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M8 2.1a5.9 5.9 0 1 1 0 11.8a5.9 5.9 0 0 1 0-11.8Zm0 2.1a.9.9 0 1 0 0 1.8a.9.9 0 0 0 0-1.8Zm-.7 3.4h1.4v4.1H7.3V7.6Z");
+        path.getStyleClass().add("stock-summary-dialog-info-icon");
+        return path;
+    }
+
+    private Node stockSummaryProductsGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M8 2.2 13.2 5v6L8 13.8 2.8 11V5L8 2.2Zm0 1.7L4.3 5.5 8 7.2l3.7-1.7L8 3.9Zm-4 2.8v3.2l3.2 1.8V8.4L4 6.7Zm8 0-3.2 1.7v3.3l3.2-1.8V6.7Z");
+        path.getStyleClass().add("stock-summary-metric-icon");
+        return path;
+    }
+
+    private Node stockSummaryUnitsGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M4 5.2 8 3l4 2.2M4 5.2V9.6L8 12l4-2.4V5.2M4 5.2 8 7.6l4-2.4M6 10.8 10 13l4-2.2M6 10.8V15.2L10 17.6l4-2.4v-4.4M6 10.8 10 13l4-2.2");
+        path.getStyleClass().addAll("stock-summary-metric-icon", "stock-summary-metric-icon-highlight");
+        return path;
+    }
+
+    private Node closeGlyph() {
+        SVGPath path = new SVGPath();
+        path.setContent("M4 4 12 12M12 4 4 12");
+        path.getStyleClass().add("stock-summary-dialog-close-icon");
+        return path;
+    }
+
     private final class ProductPicker extends VBox {
 
         private final ObjectProperty<Product> value = new SimpleObjectProperty<>();
@@ -1551,6 +1724,7 @@ public class StockManagementFxView implements FxView {
             resultsView.setCellFactory(ignored -> new StockProductCell(true));
             resultsView.setFixedCellSize(52);
             resultsView.setFocusTraversable(false);
+            FxSupport.enhanceListView(resultsView, 1.55);
 
             CustomMenuItem menuItem = new CustomMenuItem(resultsView, false);
             menuItem.getStyleClass().add("stock-product-menu-item");
@@ -1802,11 +1976,11 @@ public class StockManagementFxView implements FxView {
             colD.setHgrow(Priority.ALWAYS);
             grid.getColumnConstraints().setAll(colA, colA, colB, colD);
 
-            grid.add(fieldGroup("Producto", productPicker), 0, 0, 2, 1);
-            grid.add(fieldGroup("Cantidad", quantityField), 2, 0);
-            grid.add(fieldGroup("Costo unit.", unitCostField), 3, 0);
-            grid.add(fieldGroup("Lote", lotField), 0, 1, 2, 1);
-            grid.add(fieldGroup("Vencimiento", expirationPicker), 2, 1);
+            grid.add(fieldGroup("PRODUCTO", productPicker), 0, 0, 2, 1);
+            grid.add(fieldGroup("CANTIDAD", quantityField), 2, 0);
+            grid.add(fieldGroup("COSTO UNIT. ($)", unitCostField), 3, 0);
+            grid.add(fieldGroup("LOTE (OPCIONAL)", lotField), 0, 1, 2, 1);
+            grid.add(fieldGroup("VENCIMIENTO", expirationPicker), 2, 1);
             grid.add(subtotalBox(), 3, 1);
 
             container.getChildren().addAll(head, grid);
@@ -1825,7 +1999,7 @@ public class StockManagementFxView implements FxView {
         }
 
         private Node subtotalBox() {
-            Label label = new Label("Subtotal");
+            Label label = new Label("SUBTOTAL");
             label.getStyleClass().add("stock-field-label");
             subtotalValue.getStyleClass().add("stock-subtotal-value");
             VBox box = new VBox(8, label, subtotalValue);
@@ -1872,6 +2046,18 @@ public class StockManagementFxView implements FxView {
             return safeText(unitCostField.getText(), "").trim();
         }
 
+        private BigDecimal unitCostValue() {
+            try {
+                return parseMoney(unitCostField.getText(), "costo unitario");
+            } catch (IllegalArgumentException exception) {
+                if (productPicker.getValue() != null && productPicker.getValue().getPurchasePrice() != null
+                        && safeText(unitCostField.getText(), "").trim().isBlank()) {
+                    return productPicker.getValue().getPurchasePrice();
+                }
+                return BigDecimal.ZERO;
+            }
+        }
+
         private String lot() {
             return safeText(lotField.getText(), "").trim();
         }
@@ -1879,6 +2065,20 @@ public class StockManagementFxView implements FxView {
         private String expiration() {
             LocalDate date = expirationPicker.getValue();
             return date == null ? "" : date.toString();
+        }
+
+        private LocalDate expirationDate() {
+            return expirationPicker.getValue();
+        }
+
+        private StockEntryItem toEntryItem() {
+            StockEntryItem item = new StockEntryItem();
+            item.setProduct(product());
+            item.setQuantity(quantityValue());
+            item.setUnitCost(unitCostValue());
+            item.setLot(lot());
+            item.setExpirationDate(expirationDate());
+            return item;
         }
 
         private void validate() {
