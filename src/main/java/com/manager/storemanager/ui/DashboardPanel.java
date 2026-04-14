@@ -112,7 +112,7 @@ public class DashboardPanel extends JPanel implements RefreshableView {
         bottomCards.add(createMetricCard("Stock Bajo", "Productos que requieren reposicion.",
                 lowStockValue, "!", UIConstants.DANGER_SOFT, UIConstants.DANGER));
         bottomCards.add(createMetricCard("Ventas del Dia", "Total vendido en la jornada actual.",
-                salesValue, "$", UIConstants.SUCCESS_SOFT, UIConstants.SUCCESS));
+                salesValue, CurrencyUtils.symbol(), UIConstants.SUCCESS_SOFT, UIConstants.SUCCESS));
         bottomCards.add(createHintCard());
 
         // ── Assembly: vertical stack ────────────────────────────────────────

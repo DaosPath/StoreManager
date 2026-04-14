@@ -373,7 +373,7 @@ public class DashboardFxView implements FxView {
     }
 
     private void applyEmptyState() {
-        salesValue.setText("$0,00");
+        salesValue.setText(CurrencyUtils.format(BigDecimal.ZERO));
         salesMessage.setText("Sin ventas registradas hoy.");
         productsValue.setText("0");
         customersValue.setText("0");

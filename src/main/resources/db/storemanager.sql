@@ -188,30 +188,30 @@ INSERT INTO categorias (nombre, descripcion) VALUES
 ('Limpieza', 'Productos de aseo');
 
 INSERT INTO proveedores (nombre, telefono, correo, direccion) VALUES
-('Distribuidora Central', '3001002001', 'ventas@distribuidora.com', 'Calle 10 #15-20'),
-('Bebidas del Norte', '3001002002', 'contacto@bebidasnorte.com', 'Carrera 22 #40-12');
+('Distribuidora Central', '987456321', 'ventas@distribuidoracentral.pe', 'Av. Abancay 542, Lima'),
+('Bebidas del Norte', '989114725', 'contacto@bebidasdelnorte.pe', 'Av. Tupac Amaru 1450, Los Olivos');
 
 INSERT INTO clientes (nombre, telefono, documento, direccion) VALUES
-('Consumidor Final', '', 'CF-000', 'Venta de mostrador'),
-('Ana Morales', '3015001100', 'CC10001', 'Barrio Centro');
+('Consumidor Final', '', '00000000', 'Venta de mostrador'),
+('Ana Morales', '956782341', '74215638', 'Jr. Los Cedros 245, Cercado de Lima');
 
 INSERT INTO productos (categoria_id, proveedor_id, codigo, nombre, descripcion, precio_compra, precio_venta, stock, stock_minimo, estado) VALUES
-(1, 1, 'PRD-001', 'Arroz 1Kg', 'Arroz blanco premium', 2800.00, 3600.00, 35, 10, 'ACTIVO'),
-(2, 2, 'PRD-002', 'Gaseosa Cola 500ml', 'Bebida gaseosa', 1800.00, 2500.00, 24, 8, 'ACTIVO'),
-(3, 1, 'PRD-003', 'Detergente 500g', 'Detergente en polvo', 3200.00, 4500.00, 12, 5, 'ACTIVO');
+(1, 1, 'PRD-001', 'Arroz 1Kg', 'Arroz blanco premium', 3.20, 4.20, 35, 10, 'ACTIVO'),
+(2, 2, 'PRD-002', 'Gaseosa Cola 500ml', 'Bebida gaseosa', 1.80, 2.80, 24, 8, 'ACTIVO'),
+(3, 1, 'PRD-003', 'Detergente 500g', 'Detergente en polvo', 4.50, 6.90, 12, 5, 'ACTIVO');
 
 INSERT INTO documentos_stock (
     tipo_registro, proveedor_id, usuario_id, tipo_documento, serie, correlativo,
     almacen_destino, tipo_ajuste, motivo_general, observacion, total_lineas, total_unidades, monto_total
 ) VALUES (
     'AJUSTE', NULL, 1, NULL, NULL, NULL,
-    'Almacen principal', 'Regularizacion', 'Carga inicial', 'Carga inicial del inventario base', 3, 71, 179600.00
+    'Almacen principal', 'Regularizacion', 'Carga inicial', 'Carga inicial del inventario base', 3, 71, 209.20
 );
 
 INSERT INTO movimientos_inventario (
     producto_id, usuario_id, tipo_movimiento, cantidad, stock_anterior, stock_nuevo,
     costo_unitario, subtotal_movimiento, lote, fecha_vencimiento, motivo, referencia_tipo, referencia_id
 ) VALUES
-(1, 1, 'ENTRADA', 35, 0, 35, 2800.00, 98000.00, NULL, NULL, 'Ajuste Regularizacion - Carga inicial', 'DOCUMENTO_STOCK', 1),
-(2, 1, 'ENTRADA', 24, 0, 24, 1800.00, 43200.00, NULL, NULL, 'Ajuste Regularizacion - Carga inicial', 'DOCUMENTO_STOCK', 1),
-(3, 1, 'ENTRADA', 12, 0, 12, 3200.00, 38400.00, NULL, NULL, 'Ajuste Regularizacion - Carga inicial', 'DOCUMENTO_STOCK', 1);
+(1, 1, 'ENTRADA', 35, 0, 35, 3.20, 112.00, NULL, NULL, 'Ajuste Regularizacion - Carga inicial', 'DOCUMENTO_STOCK', 1),
+(2, 1, 'ENTRADA', 24, 0, 24, 1.80, 43.20, NULL, NULL, 'Ajuste Regularizacion - Carga inicial', 'DOCUMENTO_STOCK', 1),
+(3, 1, 'ENTRADA', 12, 0, 12, 4.50, 54.00, NULL, NULL, 'Ajuste Regularizacion - Carga inicial', 'DOCUMENTO_STOCK', 1);

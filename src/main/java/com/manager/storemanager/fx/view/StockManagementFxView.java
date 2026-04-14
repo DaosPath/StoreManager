@@ -1509,7 +1509,7 @@ public class StockManagementFxView implements FxView {
         String value = safeText(rawValue, "").trim()
                 .replace(" ", "")
                 .replace("$", "")
-                .replace("S/", "")
+                .replace(CurrencyUtils.symbol(), "")
                 .replace(",", ".");
         if (value.isBlank()) {
             throw new IllegalArgumentException("Ingresa " + label + ".");
@@ -1978,7 +1978,7 @@ public class StockManagementFxView implements FxView {
 
             grid.add(fieldGroup("PRODUCTO", productPicker), 0, 0, 2, 1);
             grid.add(fieldGroup("CANTIDAD", quantityField), 2, 0);
-            grid.add(fieldGroup("COSTO UNIT. ($)", unitCostField), 3, 0);
+            grid.add(fieldGroup("COSTO UNIT. (" + CurrencyUtils.symbol() + ")", unitCostField), 3, 0);
             grid.add(fieldGroup("LOTE (OPCIONAL)", lotField), 0, 1, 2, 1);
             grid.add(fieldGroup("VENCIMIENTO", expirationPicker), 2, 1);
             grid.add(subtotalBox(), 3, 1);
