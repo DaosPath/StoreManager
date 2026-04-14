@@ -1,0 +1,166 @@
+.app-button,
+.app-icon-button,
+.app-badge,
+.app-chip,
+.app-avatar,
+.app-switch,
+.app-divider {
+    -fx-font-family: "Bahnschrift";
+}
+
+.app-button {
+    -fx-background-radius: 9;
+    -fx-border-radius: 9;
+    -fx-padding: 9 14 9 14;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+}
+
+.app-button-primary {
+    -fx-background-color: #11a97e;
+    -fx-text-fill: white;
+}
+
+.app-button-primary:hover {
+    -fx-background-color: #0f8f66;
+}
+
+.app-button-secondary {
+    -fx-background-color: white;
+    -fx-border-color: #d7e0e8;
+    -fx-text-fill: #1f2937;
+}
+
+.app-button-secondary:hover {
+    -fx-background-color: #f8fafc;
+}
+
+.app-button-danger {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: white;
+}
+
+.app-button-danger:hover {
+    -fx-background-color: #b91c1c;
+}
+
+.app-button-ghost {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #1f2937;
+}
+
+.app-icon-button {
+    -fx-background-color: white;
+    -fx-border-color: #d7e0e8;
+    -fx-background-radius: 9;
+    -fx-border-radius: 9;
+    -fx-padding: 9;
+    -fx-cursor: hand;
+}
+
+.app-icon-button:hover {
+    -fx-background-color: #f8fafc;
+}
+
+.app-badge {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 4 8 4 8;
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+}
+
+.app-badge-neutral {
+    -fx-background-color: #eef2f6;
+    -fx-text-fill: #4b5a6a;
+}
+
+.app-badge-success {
+    -fx-background-color: #edf9f4;
+    -fx-text-fill: #0f8f66;
+}
+
+.app-badge-warning {
+    -fx-background-color: #fff7e6;
+    -fx-text-fill: #b7791f;
+}
+
+.app-badge-danger {
+    -fx-background-color: #fef2f2;
+    -fx-text-fill: #c24141;
+}
+
+.app-chip {
+    -fx-background-color: white;
+    -fx-border-color: #d7e0e8;
+    -fx-background-radius: 9;
+    -fx-border-radius: 9;
+    -fx-padding: 7 11 7 11;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #556477;
+    -fx-cursor: hand;
+}
+
+.app-chip:hover {
+    -fx-background-color: #f8fafc;
+}
+
+.app-chip-active {
+    -fx-background-color: #edf9f4;
+    -fx-border-color: #8fddbf;
+    -fx-text-fill: #0f8f66;
+}
+
+.app-avatar {
+    -fx-background-color: #eef8f4;
+    -fx-background-radius: 999;
+    -fx-border-color: #bfe7d8;
+    -fx-border-radius: 999;
+}
+
+.app-avatar-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f8f66;
+}
+
+.app-switch {
+    -fx-background-color: transparent;
+    -fx-background-radius: 999;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.app-switch-graphic {
+    -fx-padding: 0;
+}
+
+.app-switch-track {
+    -fx-background-color: #dbe4ea;
+    -fx-background-radius: 999;
+}
+
+.app-switch-active .app-switch-track {
+    -fx-background-color: #11a97e;
+}
+
+.app-switch-thumb {
+    -fx-background-color: white;
+    -fx-background-radius: 999;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.12), 4, 0.2, 0, 1);
+}
+
+.app-divider {
+    -fx-background-color: #e5ebf0;
+}
+
+.app-glyph {
+    -fx-fill: transparent;
+    -fx-stroke: #718196;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-linecap: round;
+    -fx-stroke-linejoin: round;
+}

@@ -28,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.JTextArea;
 
 public class DashboardPanel extends JPanel implements RefreshableView {
 
@@ -147,7 +148,7 @@ public class DashboardPanel extends JPanel implements RefreshableView {
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
         titleLabel.setForeground(UIConstants.TEXT_PRIMARY);
 
-        JLabel subtitleLabel = new JLabel("<html><div style='width:140px; line-height:120%'>" + subtitle + "</div></html>");
+        WrappedTextBlock subtitleLabel = new WrappedTextBlock(subtitle, 140);
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         subtitleLabel.setForeground(UIConstants.TEXT_MUTED);
 
@@ -197,7 +198,10 @@ public class DashboardPanel extends JPanel implements RefreshableView {
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Segoe UI", Font.BOLD, 15));
 
-        JLabel body = new JLabel("<html><div style='width:200px; line-height:130%'>Usa Reportes para revisar ventas por rango y el modulo Gestion de stock para registrar nuevas entradas de mercaderia.</div></html>");
+        WrappedTextBlock body = new WrappedTextBlock(
+                "Usa Reportes para revisar ventas por rango y el modulo Gestion de stock para registrar nuevas entradas de mercaderia.",
+                200
+        );
         body.setForeground(new Color(185, 200, 222));
         body.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
@@ -346,6 +350,35 @@ public class DashboardPanel extends JPanel implements RefreshableView {
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
+
+    private static final class WrappedTextBlock extends JTextArea {
+
+        private final int preferredWidth;
+
+        WrappedTextBlock(String text, int preferredWidth) {
+            super(text);
+            this.preferredWidth = preferredWidth;
+            setOpaque(false);
+            setEditable(false);
+            setFocusable(false);
+            setLineWrap(true);
+            setWrapStyleWord(true);
+            setBorder(null);
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            setSize(preferredWidth, Short.MAX_VALUE);
+            Dimension preferred = super.getPreferredSize();
+            preferred.width = preferredWidth;
+            return preferred;
+        }
+
+        @Override
+        public Dimension getMaximumSize() {
+            return getPreferredSize();
+        }
+    }
 
     private JLabel buildValueLabel() {
         JLabel label = new JLabel("0");

@@ -11,6 +11,9 @@ import java.util.Properties;
 public final class DatabaseConnection {
 
     private static final Properties PROPERTIES = new Properties();
+    private static final String ENV_DB_URL = "DB_URL";
+    private static final String ENV_DB_USER = "DB_USER";
+    private static final String ENV_DB_PASSWORD = "DB_PASSWORD";
 
     static {
         try (InputStream inputStream = DatabaseConnection.class.getResourceAsStream(AppConfig.DATABASE_PROPERTIES)) {
@@ -29,9 +32,9 @@ public final class DatabaseConnection {
 
     public static Connection getConnection() throws SQLException {
         Connection connection = DriverManager.getConnection(
-                PROPERTIES.getProperty("db.url"),
-                PROPERTIES.getProperty("db.user"),
-                PROPERTIES.getProperty("db.password")
+                resolve("db.url", ENV_DB_URL),
+                resolve("db.user", ENV_DB_USER),
+                resolve("db.password", ENV_DB_PASSWORD)
         );
         try (Statement statement = connection.createStatement()) {
             statement.execute("SET time_zone = '-05:00'");
@@ -45,5 +48,13 @@ public final class DatabaseConnection {
         } catch (SQLException exception) {
             return false;
         }
+    }
+
+    private static String resolve(String propertyKey, String envKey) {
+        String envValue = System.getenv(envKey);
+        if (envValue != null && !envValue.isBlank()) {
+            return envValue.trim();
+        }
+        return PROPERTIES.getProperty(propertyKey);
     }
 }

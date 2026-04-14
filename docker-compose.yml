@@ -1,0 +1,42 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: storemanager-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: storemanager
+      MYSQL_USER: storemanager
+      MYSQL_PASSWORD: storemanager
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./src/main/resources/db/storemanager.sql:/docker-entrypoint-initdb.d/01-storemanager.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -ustoremanager -pstoremanager --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 25s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: storemanager-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://db:3306/storemanager?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USER: storemanager
+      DB_PASSWORD: storemanager
+      DISPLAY: ${DISPLAY:-host.docker.internal:0.0}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    profiles:
+      - gui
+
+volumes:
+  mysql_data:

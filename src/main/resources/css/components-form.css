@@ -1,0 +1,112 @@
+.app-form-field,
+.app-form-shell,
+.app-form-control,
+.app-form-combo-box,
+.app-form-date-picker {
+    -fx-font-family: "Bahnschrift";
+}
+
+.app-form-field {
+    -fx-spacing: 6;
+}
+
+.app-form-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #425466;
+}
+
+.app-form-helper {
+    -fx-font-size: 11px;
+    -fx-text-fill: #7a8795;
+}
+
+.app-form-shell {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d7e0e8;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-padding: 0 12 0 12;
+    -fx-alignment: center-left;
+}
+
+.app-form-shell.is-focused,
+.app-form-control.is-focused,
+.app-form-combo-box:focused,
+.app-form-date-picker:focused {
+    -fx-border-color: #20a879;
+}
+
+.app-form-control {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-padding: 11 0 11 0;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1f2937;
+}
+
+.app-form-text-area {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d7e0e8;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-padding: 0 12 0 12;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1f2937;
+}
+
+.app-form-text-area.is-focused {
+    -fx-border-color: #20a879;
+}
+
+.app-form-text-area .content {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 10 0 10 0;
+}
+
+.app-form-combo-box,
+.app-form-date-picker {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d7e0e8;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.app-form-combo-box .list-cell,
+.app-form-date-picker .text-field {
+    -fx-font-size: 14px;
+    -fx-text-fill: #1f2937;
+}
+
+.app-form-combo-box .arrow-button,
+.app-form-date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 10 0 6;
+}
+
+.app-form-combo-box .arrow,
+.app-form-date-picker .arrow {
+    -fx-background-color: #7b8794;
+}
+
+.app-form-search-clear {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 6;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.app-form-search-clear:hover {
+    -fx-background-color: #eef2f6;
+}
+
+.app-form-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #7b8794;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-linecap: round;
+    -fx-stroke-linejoin: round;
+}

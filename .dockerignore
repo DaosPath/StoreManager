@@ -1,0 +1,8 @@
+target/
+.git/
+.vscode/
+lib/
+database/
+*.log
+*.out
+*.err

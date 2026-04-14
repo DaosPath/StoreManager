@@ -1,0 +1,221 @@
+.app-card,
+.app-section-card,
+.app-info-banner,
+.app-empty-state,
+.app-stat-card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d8e0e7;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.app-card,
+.app-section-card,
+.app-info-banner,
+.app-empty-state,
+.app-stat-card {
+    -fx-padding: 16;
+}
+
+.app-section-card {
+    -fx-spacing: 14;
+}
+
+.app-section-card-body {
+    -fx-spacing: 12;
+}
+
+.app-section-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 12;
+}
+
+.app-section-header-copy {
+    -fx-spacing: 3;
+}
+
+.app-section-header-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #122033;
+}
+
+.app-section-header-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6a7887;
+}
+
+.app-section-header-action {
+    -fx-alignment: center-right;
+}
+
+.app-toolbar {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+    -fx-padding: 10 12 10 12;
+    -fx-background-color: transparent;
+}
+
+.app-toolbar-leading,
+.app-toolbar-center,
+.app-toolbar-trailing {
+    -fx-alignment: center-left;
+    -fx-spacing: 8;
+}
+
+.app-info-banner {
+    -fx-alignment: center-left;
+    -fx-spacing: 12;
+    -fx-border-width: 1;
+}
+
+.app-info-banner-info {
+    -fx-background-color: #f5f8fb;
+    -fx-border-color: #d8e0e7;
+}
+
+.app-info-banner-success {
+    -fx-background-color: #f2fbf7;
+    -fx-border-color: #bfe9d4;
+}
+
+.app-info-banner-warning {
+    -fx-background-color: #fff8ea;
+    -fx-border-color: #efd9a4;
+}
+
+.app-info-banner-danger {
+    -fx-background-color: #fff4f4;
+    -fx-border-color: #f0c2c2;
+}
+
+.app-info-banner-icon {
+    -fx-min-width: 34;
+    -fx-pref-width: 34;
+    -fx-min-height: 34;
+    -fx-pref-height: 34;
+    -fx-alignment: center;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d8e0e7;
+}
+
+.app-info-banner-info .app-info-banner-icon {
+    -fx-border-color: #bfd3e4;
+}
+
+.app-info-banner-success .app-info-banner-icon {
+    -fx-border-color: #bfe9d4;
+}
+
+.app-info-banner-warning .app-info-banner-icon {
+    -fx-border-color: #efd9a4;
+}
+
+.app-info-banner-danger .app-info-banner-icon {
+    -fx-border-color: #f0c2c2;
+}
+
+.app-info-banner-copy {
+    -fx-spacing: 2;
+}
+
+.app-info-banner-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #122033;
+}
+
+.app-info-banner-message {
+    -fx-font-size: 13px;
+    -fx-text-fill: #526170;
+}
+
+.app-banner-glyph {
+    -fx-fill: transparent;
+    -fx-stroke: #5b6d80;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-linecap: round;
+    -fx-stroke-linejoin: round;
+}
+
+.app-info-banner-success .app-banner-glyph {
+    -fx-stroke: #12936d;
+}
+
+.app-info-banner-warning .app-banner-glyph {
+    -fx-stroke: #b7791f;
+}
+
+.app-info-banner-danger .app-banner-glyph {
+    -fx-stroke: #c24141;
+}
+
+.app-empty-state {
+    -fx-alignment: center;
+    -fx-spacing: 10;
+}
+
+.app-empty-state-icon {
+    -fx-min-width: 52;
+    -fx-pref-width: 52;
+    -fx-min-height: 52;
+    -fx-pref-height: 52;
+    -fx-alignment: center;
+    -fx-background-color: #f5f8fb;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #d8e0e7;
+}
+
+.app-empty-state-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #122033;
+}
+
+.app-empty-state-message {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64707f;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+    -fx-max-width: 320;
+}
+
+.app-empty-state-action {
+    -fx-alignment: center;
+}
+
+.app-empty-state-glyph {
+    -fx-fill: transparent;
+    -fx-stroke: #8b99a9;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-linecap: round;
+    -fx-stroke-linejoin: round;
+}
+
+.app-stat-card {
+    -fx-spacing: 4;
+}
+
+.app-stat-card-copy {
+    -fx-spacing: 4;
+}
+
+.app-stat-card-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #6a7887;
+}
+
+.app-stat-card-value {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #122033;
+}
+
+.app-stat-card-detail {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64707f;
+}

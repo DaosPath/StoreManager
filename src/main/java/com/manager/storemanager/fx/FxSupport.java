@@ -31,9 +31,18 @@ public final class FxSupport {
 
     private static final String BASE_CSS = css("/css/base.css");
     private static final String MAIN_CSS = css("/css/main.css");
+    private static final String COMPONENTS_CORE_CSS = css("/css/components-core.css");
+    private static final String COMPONENTS_FORM_CSS = css("/css/components-form.css");
+    private static final String COMPONENTS_DISPLAY_CSS = css("/css/components-display.css");
 
     public static void applyTheme(Scene scene) {
-        scene.getStylesheets().setAll(BASE_CSS, MAIN_CSS);
+        scene.getStylesheets().setAll(
+                BASE_CSS,
+                MAIN_CSS,
+                COMPONENTS_CORE_CSS,
+                COMPONENTS_FORM_CSS,
+                COMPONENTS_DISPLAY_CSS
+        );
     }
 
     public static void enhanceScrollPane(ScrollPane scrollPane, double multiplier) {
@@ -165,7 +174,13 @@ public final class FxSupport {
     }
 
     public static void applyDialogTheme(DialogPane dialogPane) {
-        dialogPane.getStylesheets().setAll(BASE_CSS, MAIN_CSS);
+        dialogPane.getStylesheets().setAll(
+                BASE_CSS,
+                MAIN_CSS,
+                COMPONENTS_CORE_CSS,
+                COMPONENTS_FORM_CSS,
+                COMPONENTS_DISPLAY_CSS
+        );
         if (!dialogPane.getStyleClass().contains("app-root")) {
             dialogPane.getStyleClass().add("app-root");
         }
