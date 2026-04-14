@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>run</actionName>
+        <displayName>Run JavaFX App</displayName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>org.openjfx:javafx-maven-plugin:0.0.8:run</goal>
+        </goals>
+        <properties>
+            <exec.mainClass>${exec.mainClass}</exec.mainClass>
+        </properties>
+    </action>
+</actions>
